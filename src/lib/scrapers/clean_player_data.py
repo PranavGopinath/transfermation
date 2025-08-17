@@ -126,7 +126,6 @@ def _dedupe_columns_collapse_first(df: pd.DataFrame) -> pd.DataFrame:
     """
     if df.columns.duplicated().any():
         df = (df.T.groupby(level=0).apply(lambda g: g.bfill().iloc[0]).T)
-        # Make dtype decisions explicit to avoid FutureWarning
         df = df.infer_objects(copy=False)
     return df
 
@@ -165,12 +164,10 @@ def clean_to_core_features(df: pd.DataFrame, season: str | None = None) -> pd.Da
     df = _flatten_columns(df)
     df = _apply_aliases(df)
 
-    # ➕ collapse duplicate columns created by aliasing/merging
     df = _dedupe_columns_collapse_first(df)
 
     df = _drop_header_echo_rows(df)
 
-    # standardize keys
     for k in ("Player", "Squad"):
         if k in df.columns:
             df[k] = df[k].astype(str).str.strip()
@@ -178,26 +175,22 @@ def clean_to_core_features(df: pd.DataFrame, season: str | None = None) -> pd.Da
     if season is not None:
         df["Season"] = season
 
-    # Keep only available target columns
     keep = [c for c in CORE_FEATURES if c in df.columns]
     missing = [c for c in CORE_FEATURES if c not in df.columns]
 
     cleaned = df[keep].copy()
 
-    # ➕ ensure no duplicates remain in the kept set (safety)
     if cleaned.columns.duplicated().any():
         cleaned = _dedupe_columns_collapse_first(cleaned)
 
-    # numeric coercion (now guaranteed Series per column)
     cleaned = _coerce_numeric(cleaned)
 
-    # drop exact duplicates on identity cols
     id_keys = [k for k in ["Player", "Squad", "Season"] if k in cleaned.columns]
     if id_keys:
         cleaned = cleaned.drop_duplicates(subset=id_keys, keep="first")
 
     if missing:
-        print(f"⚠️ Missing {len(missing)} expected columns (skipped): {missing[:12]}{'...' if len(missing)>12 else ''}")
+        print(f" Missing {len(missing)} expected columns (skipped): {missing[:12]}{'...' if len(missing)>12 else ''}")
     
     if {"npxG", "xAG"}.issubset(cleaned.columns):
         cleaned["npxG+xAG"] = cleaned["npxG"] + cleaned["xAG"]
@@ -220,4 +213,4 @@ if __name__ == "__main__":
     cleaned = load_and_clean(in_csv, season="2024-2025")
     out_csv = os.path.join(out_dir, "fbref_clean_2024_2025.csv")
     cleaned.to_csv(out_csv, index=False)
-    print(f"✅ Saved cleaned file: {out_csv} (shape={cleaned.shape})")
+    print(f" Saved cleaned file: {out_csv} (shape={cleaned.shape})")

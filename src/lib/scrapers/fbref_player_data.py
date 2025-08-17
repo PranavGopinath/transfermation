@@ -20,7 +20,6 @@ table_types = {
     "keepersadv": "keepersadv",
 }
 
-# Overrides for table IDs that don't match the simple "stats_<path>" rule
 TABLE_ID_OVERRIDES = {
     "stats": "stats_standard",
     "keepers": "stats_keeper",
@@ -30,7 +29,6 @@ TABLE_ID_OVERRIDES = {
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
-# ---------- CLEANUP HELPERS (top-level, no indentation!) ----------
 def _flatten_columns(df: pd.DataFrame) -> pd.DataFrame:
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = [c[-1] if isinstance(c, tuple) else c for c in df.columns.values]
@@ -66,13 +64,11 @@ def _standardize_keys(df: pd.DataFrame) -> pd.DataFrame:
 def parse_fbref_table_by_id(html: str, table_id: str) -> pd.DataFrame | None:
     soup = BeautifulSoup(html, "html.parser")
 
-    # visible table
     t = soup.find("table", id=table_id)
     if t:
         df = pd.read_html(StringIO(str(t)))[0]
         return _standardize_keys(_clean_body(_flatten_columns(df)))
 
-    # tables inside HTML comments
     comments = soup.find_all(string=lambda text: isinstance(text, Comment))
     for c in comments:
         try:
@@ -85,7 +81,6 @@ def parse_fbref_table_by_id(html: str, table_id: str) -> pd.DataFrame | None:
             continue
     return None
 
-# Keep ONLY this version of extract_table_from_url (with table_id)
 def extract_table_from_url(url: str, table_id: str) -> pd.DataFrame | None:
     try:
         print(f"Scraping from {url}")
@@ -107,7 +102,7 @@ def collect_season_player_stats(season: str, save_csv: bool = True):
         url = f"{base_url}{path}/players/{season}-Big-5-European-Leagues-Stats"
         table_id = TABLE_ID_OVERRIDES.get(path, f"stats_{path}")  # <-- keeper IDs fixed
         df = extract_table_from_url(url, table_id)
-        time.sleep(2.0)  # be nice to the site
+        time.sleep(3.0)
         if df is not None:
             all_tables[name] = df
         else:
@@ -124,13 +119,13 @@ def collect_season_player_stats(season: str, save_csv: bool = True):
         if name == "standard":
             continue
         if not set(keys).issubset(df.columns):
-            print(f"❌ Skipping {name}: missing merge keys {set(keys) - set(df.columns)}")
+            print(f" Skipping {name}: missing merge keys {set(keys) - set(df.columns)}")
             continue
         df = df.drop_duplicates(subset=keys)
         try:
             before_cols = len(merged_df.columns)
             merged_df = pd.merge(merged_df, df, on=keys, how="left", suffixes=("", f"_{name}"))
-            print(f"✅ Merged {name}: +{len(merged_df.columns) - before_cols} cols")
+            print(f" Merged {name}: +{len(merged_df.columns) - before_cols} cols")
         except Exception as e:
             print(f"Error merging {name}: {e}")
 
@@ -141,7 +136,7 @@ def collect_season_player_stats(season: str, save_csv: bool = True):
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, f"fbref_merged_{season.replace('-', '_')}.csv")
         merged_df.to_csv(out_path, index=False)
-        print(f"✅ Saved merged stats to {out_path}")
+        print(f" Saved merged stats to {out_path}")
 
     return merged_df
 
