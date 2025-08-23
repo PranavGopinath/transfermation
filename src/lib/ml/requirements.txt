@@ -1,0 +1,12 @@
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.5
+matplotlib>=3.9
+xgboost>=2.0
+lightgbm>=4.3
+shap>=0.45
+jupyterlab>=4.2
+ipykernel>=6.29
+pyarrow>=16
+mlflow>=2.15
+wandb>=0.17

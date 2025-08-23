@@ -43,3 +43,10 @@ next-env.d.ts
 *venv
 
 *.cache_fbref
+
+#ml
+src/lib/ml/data/raw/
+ml/data/raw/
+**/.ipynb_checkpoints/
+src/lib/ml/.venv/
+ml/models/
