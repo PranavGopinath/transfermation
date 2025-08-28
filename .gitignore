@@ -50,3 +50,5 @@ ml/data/raw/
 **/.ipynb_checkpoints/
 src/lib/ml/.venv/
 ml/models/
+
+**/__pycache__/

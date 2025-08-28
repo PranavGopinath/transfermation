@@ -32,7 +32,7 @@ DATA_DIRS = [
     ROOT / "src/lib/data",
     ROOT / "src/ml/data/processed",
 ]
-MODELS_DIR = ROOT / f"src/ml/models/v1/{LEAGUE_SLUG}"
+MODELS_DIR = ROOT / f"src/lib/ml/v1/{LEAGUE_SLUG}"
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
 FEATURE_SEASONS = ["2021-2022", "2022-2023", "2023-2024"]
@@ -48,9 +48,11 @@ np.random.seed(RANDOM_SEED)
 # -------------------
 # IO helpers
 # -------------------
+
 def season_to_fname(season: str) -> str:
     return f"fbref_clean_{season.replace('-', '_')}.csv"
 
+##  loads the csv of all player data by season
 def load_player_df_for_season(season: str) -> pd.DataFrame | None:
     fname = season_to_fname(season)
     for d in DATA_DIRS:

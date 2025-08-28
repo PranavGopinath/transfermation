@@ -1,0 +1,57 @@
+{
+  "model": "ridge",
+  "cv_folds": [
+    {
+      "train": [
+        "2022-2023"
+      ],
+      "val": "2023-2024"
+    }
+  ],
+  "test_season": "2024-2025",
+  "metrics": {
+    "test_mae": 13.233351239452375,
+    "test_rmse": 17.647860872345653,
+    "test_spearman": 0.5742256856611072
+  },
+  "features": {
+    "numeric": [
+      "last1_gls_per90",
+      "last1_ast_per90",
+      "last1_sot_per90",
+      "last1_sca_per90",
+      "last1_tklint_per90",
+      "last1_blocks_per90",
+      "last1_prgp_per90",
+      "last1_prgc_per90",
+      "last1_prgr_per90",
+      "last1_avg_age_mwa",
+      "expw_gls_per90",
+      "expw_ast_per90",
+      "expw_sot_per90",
+      "expw_sca_per90",
+      "expw_tklint_per90",
+      "expw_blocks_per90",
+      "expw_prgp_per90",
+      "expw_prgc_per90",
+      "expw_prgr_per90",
+      "expw_avg_age_mwa",
+      "last1_team_minutes",
+      "expw_team_minutes",
+      "history_len",
+      "promoted",
+      "missing_prev",
+      "trend_gls_per90",
+      "trend_ast_per90",
+      "trend_sot_per90",
+      "trend_sca_per90",
+      "trend_tklint_per90",
+      "trend_blocks_per90",
+      "trend_prgp_per90",
+      "trend_prgc_per90",
+      "trend_prgr_per90",
+      "trend_avg_age_mwa",
+      "trend_team_minutes"
+    ]
+  }
+}
