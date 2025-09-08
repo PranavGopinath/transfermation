@@ -23,7 +23,6 @@ interface Team {
   name: string;
   country: string;
   league: string;
-  seasons_active: number;
   latest_season: string;
 }
 
@@ -54,6 +53,21 @@ export default function Home() {
     : Array.isArray(data?.data) ? data.data
     : [];
 
+  const getCountryFlag = (country: string): string => {
+    const flagMap: { [key: string]: string } = {
+      'ENGLAND': '/england.svg',
+      'SPAIN': '/spain.svg',
+      'GERMANY': '/germany.svg',
+      'ITALY': '/italy.svg',
+      'FRANCE': '/france.svg',
+    };
+    return flagMap[country.toUpperCase()] || '/globe.svg';
+  };
+
+  useEffect(() => {
+    console.log('showResults', showResults);
+  }, [showResults]);
+
   const searchPlayers = useCallback(async (query: string) => {
     if (query.trim().length < 2) {
       setSearchResults([]);
@@ -69,13 +83,12 @@ export default function Home() {
         console.error('Player search failed:', response.status, text);
         setSearchResults([]);
         setUsingFallback(true);
-      } else {
-        const data = await response.json();
-        // API returns array directly, not wrapped in data property
-        setSearchResults(data);
-        setUsingFallback(false);
-        setShowResults(true);
-      }
+        } else {
+          const data = await response.json();
+          setSearchResults(data);
+          setUsingFallback(false);
+          console.log('2');
+        }
     } catch (err) {
       console.error('Error searching players:', err);
       setSearchResults([]);
@@ -99,13 +112,11 @@ export default function Home() {
         console.error('Team search failed:', response.status, text);
         setTeamSearchResults([]);
         setUsingFallback(true);
-      } else {
-        const data = await response.json();
-        // API returns array directly, not wrapped in data property
-        setTeamSearchResults(data);
-        setUsingFallback(false);
-        setShowTeamResults(true);
-      }
+        } else {
+          const data = await response.json();
+          setTeamSearchResults(data);
+          setUsingFallback(false);
+        }
     } catch (err) {
       console.error('Error searching teams:', err);
       setTeamSearchResults([]);
@@ -176,15 +187,16 @@ export default function Home() {
                 value={playerSearch}
                 onChange={(e) => {
                   setPlayerSearch(e.target.value);
-                  setShowResults(true); // keep visible while typing
+                  setShowResults(true);
+                  console.log('1');
                 }}
-                onFocus={() => setShowResults(true)}
+                onFocus={() => {setShowResults(true);
+                 console.log('3')}}
                 className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   playerSearch ? 'text-slate-900' : 'text-slate-500'
                 }`}
               />
 
-              {/* Player Results */}
               {showResults && (loading || searchResults.length > 0) && (
                 <div className="search-dropdown absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                   {loading ? (
@@ -198,7 +210,6 @@ export default function Home() {
                         onClick={() => {
                           setPlayerSearch(player.name);
                           setShowResults(false);
-                          setSearchResults([]);
                         }}
                       >
                         <div className="flex justify-between items-start">
@@ -266,10 +277,17 @@ export default function Home() {
                               {team.league} • {team.country}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {team.seasons_active} seasons • Latest: {team.latest_season}
+                              Latest: {team.latest_season}
                             </p>
                           </div>
-                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Top 5 League</span>
+                          <div className="flex flex-col items-end">
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mb-1">Top 5 League</span>
+                            <img 
+                              src={getCountryFlag(team.country)} 
+                              alt={team.country} 
+                              className="w-6 h-6"
+                            />
+                          </div>
                         </div>
                       </div>
                     ))
@@ -345,8 +363,14 @@ export default function Home() {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-blue-600">{team.seasons_active}</div>
-                        <div className="text-xs text-gray-500">Seasons Active</div>
+                        <div className="flex justify-center mb-1">
+                          <img 
+                            src={getCountryFlag(team.country)} 
+                            alt={team.country} 
+                            className="w-8 h-8"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-500">{team.country}</div>
                       </div>
                       <div className="text-center p-2 bg-gray-50 rounded">
                         <div className="font-semibold text-orange-600">Top 5</div>
