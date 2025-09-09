@@ -17,6 +17,7 @@ def search_teams(q: str):
             tm.name,
             tm.country,
             tm.league,
+            1 AS seasons_active,
             '2024-2025' AS latest_season
         FROM teams tm
         WHERE LOWER(tm.name) LIKE LOWER(%s)

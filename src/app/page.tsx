@@ -24,6 +24,8 @@ interface Team {
   country: string;
   league: string;
   latest_season: string;
+  active_2024_2025: boolean;
+  league_position: number | null;
 }
 
 interface Transfer {
@@ -64,6 +66,15 @@ export default function Home() {
     return flagMap[country.toUpperCase()] || '/globe.svg';
   };
 
+  const getOrdinalSuffix = (num: number): string => {
+    const j = num % 10;
+    const k = num % 100;
+    if (j === 1 && k !== 11) return 'st';
+    if (j === 2 && k !== 12) return 'nd';
+    if (j === 3 && k !== 13) return 'rd';
+    return 'th';
+  };
+
   useEffect(() => {
     console.log('showResults', showResults);
   }, [showResults]);
@@ -87,7 +98,6 @@ export default function Home() {
           const data = await response.json();
           setSearchResults(data);
           setUsingFallback(false);
-          console.log('2');
         }
     } catch (err) {
       console.error('Error searching players:', err);
@@ -277,7 +287,8 @@ export default function Home() {
                               {team.league} • {team.country}
                             </p>
                             <p className="text-xs text-gray-500">
-                              Latest: {team.latest_season}
+                              {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
+                              {team.league_position && ` • ${team.league_position}${getOrdinalSuffix(team.league_position)}`}
                             </p>
                           </div>
                           <div className="flex flex-col items-end">
@@ -359,7 +370,9 @@ export default function Home() {
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
                       <div className="font-medium">{team.country}</div>
-                      <div className="text-xs text-gray-500">Latest season: {team.latest_season}</div>
+                      <div className="text-xs text-gray-500">
+                        {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="text-center p-2 bg-gray-50 rounded">
@@ -373,8 +386,10 @@ export default function Home() {
                         <div className="text-xs text-gray-500">{team.country}</div>
                       </div>
                       <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-orange-600">Top 5</div>
-                        <div className="text-xs text-gray-500">League Tier</div>
+                        <div className="font-semibold text-orange-600">
+                          {team.league_position ? `${team.league_position}${getOrdinalSuffix(team.league_position)}` : 'N/A'}
+                        </div>
+                        <div className="text-xs text-gray-500">League Position</div>
                       </div>
                     </div>
                   </div>
