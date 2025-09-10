@@ -1,4 +1,3 @@
-# ml/scripts/train_v1.py
 from __future__ import annotations
 import json, math
 from dataclasses import dataclass
@@ -52,7 +51,6 @@ np.random.seed(RANDOM_SEED)
 def season_to_fname(season: str) -> str:
     return f"fbref_clean_{season.replace('-', '_')}.csv"
 
-##  loads the csv of all player data by season
 def load_player_df_for_season(season: str) -> pd.DataFrame | None:
     fname = season_to_fname(season)
     for d in DATA_DIRS:
@@ -211,7 +209,7 @@ HIST_METRICS = [
 ]
 
 def exp_decay_weights(n: int, half_life: float = 1.0) -> np.ndarray:
-    ages = np.arange(n, dtype=float)  # 0 = most recent
+    ages = np.arange(n, dtype=float)
     w = 0.5 ** (ages / half_life)
     return w / w.sum() if w.sum() > 0 else np.ones(n)/n
 
@@ -235,7 +233,7 @@ def aggregate_history(rows: List[dict]) -> dict:
         return out
 
     for m in HIST_METRICS:
-        seq = [r.get(m, np.nan) for r in rows]  # most recent first
+        seq = [r.get(m, np.nan) for r in rows] 
         out[f"last1_{m}"] = seq[0]
 
         arr = np.array(seq, dtype=float)
@@ -249,7 +247,7 @@ def aggregate_history(rows: List[dict]) -> dict:
     return out
 
 # -------------------
-# Build dataset (rows keyed by target season t; features from all seasons ≤ t-1)
+# Build dataset 
 # -------------------
 def build_team_season_dataset_multi() -> pd.DataFrame:
     team_feats_by_season = make_team_features_by_season()
@@ -267,10 +265,8 @@ def build_team_season_dataset_multi() -> pd.DataFrame:
             print(f"!! No targets for {t}.")
             continue
 
-        # index team features per season
         by_season = {s: team_feats_by_season[s].set_index("Squad") for s in hist_seasons}
 
-        # promoted flag: team missing in the most recent prev season
         most_recent_prev = hist_seasons[0]
         prev_teams = set(by_season[most_recent_prev].index.tolist())
         tgt_t["promoted"] = (~tgt_t["Squad"].isin(prev_teams)).astype(int)
@@ -278,7 +274,6 @@ def build_team_season_dataset_multi() -> pd.DataFrame:
         for _, row in tgt_t.iterrows():
             team = row["Squad"]
 
-            # collect per-season rows (most recent first)
             hist_rows = []
             for s in hist_seasons:
                 df = by_season[s]

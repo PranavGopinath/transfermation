@@ -48,6 +48,10 @@ export default function Home() {
   const [showResults, setShowResults] = useState(false);
   const [showTeamResults, setShowTeamResults] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [prediction, setPrediction] = useState<any>(null);
+  const [predicting, setPredicting] = useState(false);
 
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -76,6 +80,35 @@ export default function Home() {
     if (j === 3 && k !== 13) return 'rd';
     return 'th';
   };
+
+  const predictImpact = useCallback(async () => {
+    if (!selectedPlayer || !selectedTeam) return;
+    
+    setPredicting(true);
+    try {
+      const response = await fetch(`${baseUrl}/prediction/predict`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          player_id: selectedPlayer.id,
+          team_id: selectedTeam.id,
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        setPrediction(result);
+      } else {
+        console.error('Prediction failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error predicting impact:', error);
+    } finally {
+      setPredicting(false);
+    }
+  }, [selectedPlayer, selectedTeam, baseUrl]);
 
   useEffect(() => {
     console.log('showResults', showResults);
@@ -221,6 +254,7 @@ export default function Home() {
                         onMouseDown={(e) => e.preventDefault()} // prevent blur
                         onClick={() => {
                           setPlayerSearch(player.name);
+                          setSelectedPlayer(player);
                           setShowResults(false);
                         }}
                       >
@@ -278,6 +312,7 @@ export default function Home() {
                         onMouseDown={(e) => e.preventDefault()} // prevent blur
                         onClick={() => {
                           setTeamSearch(team.name);
+                          setSelectedTeam(team);
                           setShowTeamResults(false);
                           setTeamSearchResults([]);
                         }}
@@ -311,6 +346,76 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Prediction Section */}
+        {selectedPlayer && selectedTeam && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Transfer Impact Prediction</h2>
+              <button
+                onClick={predictImpact}
+                disabled={predicting}
+                className={`px-6 py-2 rounded-md font-medium ${
+                  predicting
+                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {predicting ? 'Predicting...' : 'Predict Impact'}
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <h3 className="font-semibold text-gray-900 mb-2">Selected Player</h3>
+                <p className="text-lg">{selectedPlayer.name}</p>
+                <p className="text-sm text-gray-600">{selectedPlayer.primary_pos} • {selectedPlayer.nation}</p>
+              </div>
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <h3 className="font-semibold text-gray-900 mb-2">Destination Team</h3>
+                <p className="text-lg">{selectedTeam.name}</p>
+                <p className="text-sm text-gray-600">{selectedTeam.league} • {selectedTeam.country}</p>
+              </div>
+            </div>
+
+            {prediction && (
+              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Prediction Results</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600">{prediction.impact_score.toFixed(1)}</div>
+                    <div className="text-sm text-gray-600">Impact Score</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-semibold text-green-600">{prediction.impact_level}</div>
+                    <div className="text-sm text-gray-600">Impact Level</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-semibold text-purple-600">{(prediction.confidence * 100).toFixed(0)}%</div>
+                    <div className="text-sm text-gray-600">Confidence</div>
+                  </div>
+                </div>
+                
+                {prediction.prediction_details && (
+                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Goals/Match:</span> {prediction.prediction_details.player_goals_per_match}
+                    </div>
+                    <div>
+                      <span className="font-medium">Assists/Match:</span> {prediction.prediction_details.player_assists_per_match}
+                    </div>
+                    <div>
+                      <span className="font-medium">Team Position:</span> {prediction.prediction_details.team_position}
+                    </div>
+                    <div>
+                      <span className="font-medium">Team Points:</span> {prediction.prediction_details.team_points}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {playerSearch && (searchResults?.length ?? 0) > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">

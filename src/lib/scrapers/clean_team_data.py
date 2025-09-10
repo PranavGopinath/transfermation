@@ -141,7 +141,6 @@ def main():
 
         df_clean = clean_team_df(df_raw, season_hint, comp_hint)
 
-        # write per-season file alongside league prefix
         base = os.path.basename(p)
         out_name = base.replace("_team_merged.csv", "_team_clean.csv")
         out_path = os.path.join(args.out_dir, out_name)

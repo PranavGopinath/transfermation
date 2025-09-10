@@ -206,7 +206,7 @@ def load_and_clean(csv_path: str, season: str | None = None) -> pd.DataFrame:
     return clean_to_core_features(df, season=season)
 
 if __name__ == "__main__":
-    in_csv  = os.path.join("..", "data", "fbref_merged_2024_2025.csv")   # adjust as needed
+    in_csv  = os.path.join("..", "data", "fbref_merged_2024_2025.csv")
     out_dir = os.path.join("..", "data")
     os.makedirs(out_dir, exist_ok=True)
 

@@ -72,7 +72,7 @@ def parse_fbref_table_by_id(html: str, table_id: str) -> pd.DataFrame | None:
     comments = soup.find_all(string=lambda text: isinstance(text, Comment))
     for c in comments:
         try:
-            sub = BeautifulSoup(c, "html.parser")     # <-- parse the comment HTML
+            sub = BeautifulSoup(c, "html.parser") 
             t2 = sub.find("table", id=table_id)
             if t2:
                 df = pd.read_html(StringIO(str(t2)))[0]
@@ -100,7 +100,7 @@ def collect_season_player_stats(season: str, save_csv: bool = True):
 
     for name, path in table_types.items():
         url = f"{base_url}{path}/players/{season}-Big-5-European-Leagues-Stats"
-        table_id = TABLE_ID_OVERRIDES.get(path, f"stats_{path}")  # <-- keeper IDs fixed
+        table_id = TABLE_ID_OVERRIDES.get(path, f"stats_{path}")
         df = extract_table_from_url(url, table_id)
         time.sleep(3.0)
         if df is not None:

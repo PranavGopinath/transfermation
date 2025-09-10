@@ -1,25 +1,22 @@
-# src/lib/ml/inference/simulator.py
 from __future__ import annotations
 from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
 
-# --- repo paths & league context ---
 ROOT = Path(__file__).resolve().parents[4]
 LEAGUE_SLUG = "pl"
 DATA_DIR   = ROOT / "src/lib/data"               
-MODELS_DIR = ROOT / f"src/lib/ml/v1/{LEAGUE_SLUG}"   # <-- match trainer
+MODELS_DIR = ROOT / f"src/lib/ml/v1/{LEAGUE_SLUG}"  
 PIPE = joblib.load(MODELS_DIR / "pipeline.joblib")
 
 
-LEAGUE_NAME = "Premier League"              # change per league
+LEAGUE_NAME = "Premier League"            
 BASES = ["gls_per90","ast_per90","sot_per90","sca_per90","tklint_per90","blocks_per90","prgp_per90","prgc_per90","prgr_per90","avg_age_mwa"]
 TREND_FEATURES = [f"trend_{m}" for m in BASES] + ["trend_team_minutes"]
 NON_TREND_NUMS = [f"last1_{m}" for m in BASES] + [f"expw_{m}" for m in BASES] + ["last1_team_minutes","expw_team_minutes","history_len","promoted","missing_prev"]
 NUM_FEATURES = NON_TREND_NUMS + TREND_FEATURES
 
-# ---------- helpers (keep aligned with training) ----------
 def previous_season(season: str) -> str:
     a, b = season.split("-")
     y1, y2 = int(a), int(b)
@@ -92,7 +89,7 @@ def _expw(vals: list[float], half_life=1.0) -> float:
     arr = np.array(vals, float)
     m = np.isfinite(arr)
     if not m.any(): return np.nan
-    ages = np.arange(len(arr), dtype=float)  # 0=most recent
+    ages = np.arange(len(arr), dtype=float) 
     w = 0.5 ** (ages / half_life)
     w = (w[m] / w[m].sum())
     return float((arr[m] * w).sum())
@@ -116,7 +113,7 @@ def apply_transfer_to_players(
     incoming_row: pd.Series,
     projected_minutes_in: int,
     outgoing_minutes: dict[str, int] | None = None,
-    cross_league_scale: float = 1.0,   # v1: 1.0; later: z-score mapping
+    cross_league_scale: float = 1.0, 
 ) -> pd.DataFrame:
 
     df = _normalize_cols(team_players_prev.copy())
@@ -260,7 +257,7 @@ def build_feature_vector_with_swap(
     team: str,
     target_season: str,
     incoming_player_name: str,
-    incoming_source_season: str | None,   # ← can be None; we’ll force prev
+    incoming_source_season: str | None, 
     projected_minutes_in: int,
     outgoing_minutes: dict[str,int] | None = None,
     cross_league_scale: float = 1.0,
