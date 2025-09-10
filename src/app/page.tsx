@@ -25,7 +25,9 @@ interface Team {
   league: string;
   latest_season: string;
   active_2024_2025: boolean;
-  league_position: number | null;
+  wins_2425: number | null;
+  points_2425: number | null;
+  position_2425: number | null;
 }
 
 interface Transfer {
@@ -288,11 +290,10 @@ export default function Home() {
                             </p>
                             <p className="text-xs text-gray-500">
                               {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
-                              {team.league_position && ` • ${team.league_position}${getOrdinalSuffix(team.league_position)}`}
+                              {team.position_2425 && ` • ${team.position_2425}${getOrdinalSuffix(team.position_2425)}`}
                             </p>
                           </div>
                           <div className="flex flex-col items-end">
-                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded mb-1">Top 5 League</span>
                             <img 
                               src={getCountryFlag(team.country)} 
                               alt={team.country} 
@@ -374,22 +375,24 @@ export default function Home() {
                         {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="grid grid-cols-3 gap-2 text-sm">
                       <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="flex justify-center mb-1">
-                          <img 
-                            src={getCountryFlag(team.country)} 
-                            alt={team.country} 
-                            className="w-8 h-8"
-                          />
+                        <div className="font-semibold text-blue-600">
+                          {team.position_2425 ? `${team.position_2425}${getOrdinalSuffix(team.position_2425)}` : 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">{team.country}</div>
+                        <div className="text-xs text-gray-500">Position</div>
                       </div>
                       <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-orange-600">
-                          {team.league_position ? `${team.league_position}${getOrdinalSuffix(team.league_position)}` : 'N/A'}
+                        <div className="font-semibold text-green-600">
+                          {team.points_2425 || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">League Position</div>
+                        <div className="text-xs text-gray-500">Points</div>
+                      </div>
+                      <div className="text-center p-2 bg-gray-50 rounded">
+                        <div className="font-semibold text-purple-600">
+                          {team.wins_2425 || 'N/A'}
+                        </div>
+                        <div className="text-xs text-gray-500">Wins</div>
                       </div>
                     </div>
                   </div>

@@ -17,8 +17,11 @@ def search_teams(q: str):
             tm.name,
             tm.country,
             tm.league,
-            1 AS seasons_active,
-            '2024-2025' AS latest_season
+            '2024-2025' AS latest_season,
+            true AS active_2024_2025,
+            tm.wins_2425,
+            tm.points_2425,
+            tm.position_2425
         FROM teams tm
         WHERE LOWER(tm.name) LIKE LOWER(%s)
           AND tm.league IN (
