@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Transfermation
 
-## Getting Started
+Transfermation is a Next.js + FastAPI app for exploring football transfers. Search players and teams, then get an estimate of a player's impact at a destination club. The frontend queries a FastAPI backend backed by PostgreSQL and an XGBoost model.
 
-First, run the development server:
+### Prerequisites
+- **Node.js** 18+ and **npm**
+- **Python** 3.9+
 
+### Install
+- Frontend:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+```
+- Backend:
+```bash
+pip install -r requirements.txt
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Run
+- Frontend (Next.js):
+```bash
+npm run dev
+```
+- Backend (FastAPI/Uvicorn):
+```bash
+python -m uvicorn src.app.api.common.app:app --reload --host 0.0.0.0 --port 8000
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Frontend will be at `http://localhost:3000`. Backend will be at `http://localhost:8000` (health check: `/health`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Project structure (high level)
+```
+src/
+  app/
+    api/
+      common/app.py     # FastAPI app entrypoint
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Notes
+- If imports fail when starting the backend, run with an explicit `PYTHONPATH`:
+```bash
+PYTHONPATH=$(pwd) python -m uvicorn src.app.api.common.app:app --reload --host 0.0.0.0 --port 8000
+```
