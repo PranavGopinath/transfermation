@@ -23,7 +23,7 @@ def search_teams(q: str):
             tm.points_2425,
             tm.position_2425
         FROM teams tm
-        WHERE LOWER(tm.name) LIKE LOWER(%s)
+        WHERE unaccent(LOWER(tm.name)) LIKE unaccent(LOWER(%s))
           AND tm.league IN (
               'Premier League',
               'La Liga', 

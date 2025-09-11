@@ -19,7 +19,7 @@ def search_players(q: str):
         FROM players p
         JOIN player_season_summary ps ON p.id = ps.player_id
         LEFT JOIN teams tm ON tm.id = ps.team_id
-        WHERE LOWER(p.name) LIKE LOWER(%s)
+        WHERE unaccent(LOWER(p.name)) LIKE unaccent(LOWER(%s))
         ORDER BY ps.season_start_year DESC
         LIMIT 20;
         """,
@@ -54,7 +54,7 @@ def search_players_aggregate(q: str = Query(..., min_length=1)):
         FROM player_season_summary ps
         JOIN players p ON p.id = ps.player_id
         LEFT JOIN teams tm ON tm.id = ps.team_id
-        WHERE LOWER(p.name) LIKE LOWER(%s)
+        WHERE unaccent(LOWER(p.name)) LIKE unaccent(LOWER(%s))
           AND ps.season_start_year >= EXTRACT(YEAR FROM CURRENT_DATE) - 4
         GROUP BY p.id, p.name, p.nation, p.primary_pos
         ORDER BY total_goals DESC NULLS LAST;
