@@ -52,6 +52,8 @@ export default function Home() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [prediction, setPrediction] = useState<any>(null);
   const [predicting, setPredicting] = useState(false);
+  const [projectedMinutes, setProjectedMinutes] = useState<number>(2000);
+  const [outgoingMinutesText, setOutgoingMinutesText] = useState<string>('');
 
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -83,32 +85,55 @@ export default function Home() {
 
   const predictImpact = useCallback(async () => {
     if (!selectedPlayer || !selectedTeam) return;
-    
+
+    const nextSeason = (() => {
+      const latest = selectedTeam.latest_season || '2024-2025';
+      const [y1, y2] = latest.split('-').map((s) => parseInt(s, 10));
+      if (isNaN(y1) || isNaN(y2)) return '2025-2026';
+      return `${y2}-${y2 + 1}`;
+    })();
+
+    const parseOutgoing = (txt: string): Record<string, number> | undefined => {
+      const t = txt.trim();
+      if (!t) return undefined;
+      const out: Record<string, number> = {};
+      t.split(',').forEach((pair) => {
+        const [name, mins] = pair.split(':').map((s) => s.trim());
+        const m = parseInt(mins, 10);
+        if (name && !isNaN(m)) out[name] = m;
+      });
+      return Object.keys(out).length ? out : undefined;
+    };
+
     setPredicting(true);
+    setPrediction(null);
     try {
-      const response = await fetch(`${baseUrl}/prediction/predict`, {
+      const response = await fetch(`${baseUrl}/prediction/whatif`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          player_id: selectedPlayer.id,
-          team_id: selectedTeam.id,
+          team_name: selectedTeam.name,
+          incoming_player_name: selectedPlayer.name,
+          target_season: nextSeason,
+          projected_minutes_in: projectedMinutes,
+          outgoing_minutes: parseOutgoing(outgoingMinutesText),
+          cross_league_scale: 1.0,
         }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         setPrediction(result);
       } else {
-        console.error('Prediction failed:', response.statusText);
+        const text = await response.text();
+        console.error('Prediction failed:', response.status, text);
       }
     } catch (error) {
       console.error('Error predicting impact:', error);
     } finally {
       setPredicting(false);
     }
-  }, [selectedPlayer, selectedTeam, baseUrl]);
+  }, [selectedPlayer, selectedTeam, baseUrl, projectedMinutes, outgoingMinutesText]);
 
   useEffect(() => {
     console.log('showResults', showResults);
@@ -378,40 +403,53 @@ export default function Home() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Projected Minutes for Incoming Player</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={4000}
+                  value={projectedMinutes}
+                  onChange={(e) => setProjectedMinutes(parseInt(e.target.value || '0', 10))}
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    projectedMinutes ? 'text-slate-900' : 'text-slate-500'
+                  }`}
+                />
+              </div>
+              <div className="p-4 border border-gray-200 rounded-lg">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Outgoing Minutes (optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Gabriel Jesus:1200, Trossard:600"
+                  value={outgoingMinutesText}
+                  onChange={(e) => setOutgoingMinutesText(e.target.value)}
+                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    outgoingMinutesText ? 'text-slate-900' : 'text-slate-500'
+                  }`}
+                />
+                <p className="mt-1 text-xs text-gray-500">Format: Name:Minutes, Name2:Minutes</p>
+              </div>
+            </div>
+
             {prediction && (
               <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Prediction Results</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Predicted Team Points Impact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600">{prediction.impact_score.toFixed(1)}</div>
-                    <div className="text-sm text-gray-600">Impact Score</div>
+                    <div className="text-3xl font-bold text-blue-600">{prediction.points_base?.toFixed ? prediction.points_base.toFixed(1) : prediction.points_base}</div>
+                    <div className="text-sm text-gray-600">Baseline Points</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-semibold text-green-600">{prediction.impact_level}</div>
-                    <div className="text-sm text-gray-600">Impact Level</div>
+                    <div className="text-3xl font-bold text-green-600">{prediction.points_with?.toFixed ? prediction.points_with.toFixed(1) : prediction.points_with}</div>
+                    <div className="text-sm text-gray-600">With Transfer</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-semibold text-purple-600">{(prediction.confidence * 100).toFixed(0)}%</div>
-                    <div className="text-sm text-gray-600">Confidence</div>
+                    <div className={`text-3xl font-bold ${prediction.delta >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{prediction.delta?.toFixed ? prediction.delta.toFixed(1) : prediction.delta}</div>
+                    <div className="text-sm text-gray-600">Delta (± points)</div>
                   </div>
                 </div>
-                
-                {prediction.prediction_details && (
-                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Goals/Match:</span> {prediction.prediction_details.player_goals_per_match}
-                    </div>
-                    <div>
-                      <span className="font-medium">Assists/Match:</span> {prediction.prediction_details.player_assists_per_match}
-                    </div>
-                    <div>
-                      <span className="font-medium">Team Position:</span> {prediction.prediction_details.team_position}
-                    </div>
-                    <div>
-                      <span className="font-medium">Team Points:</span> {prediction.prediction_details.team_points}
-                    </div>
-                  </div>
-                )}
+                <div className="mt-2 text-sm text-gray-600">Season: {prediction.season_target} (features from {prediction.season_features_from})</div>
               </div>
             )}
           </div>

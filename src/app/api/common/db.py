@@ -24,13 +24,11 @@ def get_conn():
         host=DB_HOST,
         port=DB_PORT,
     )
-    # Ensure unaccent extension is available (idempotent)
     try:
         with conn.cursor() as cur:
             cur.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
             conn.commit()
     except Exception:
-        # Do not fail connection if extension cannot be created (e.g., insufficient privileges)
         conn.rollback()
     return conn
 

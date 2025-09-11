@@ -13,6 +13,14 @@ class PredictionRequest(BaseModel):
     player_id: int
     team_id: int
 
+class WhatIfRequest(BaseModel):
+    team_name: str
+    incoming_player_name: str
+    target_season: str
+    projected_minutes_in: int
+    outgoing_minutes: dict[str, int] | None = None
+    cross_league_scale: float = 1.0
+
 def load_model():
     """Load the trained model"""
     try:
@@ -144,6 +152,44 @@ def predict_impact(request: PredictionRequest):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+@router.post("/whatif")
+def predict_points_delta(request: WhatIfRequest):
+    """Predict baseline points, with-transfer points, and delta using simulator."""
+    try:
+        # Import simulator lazily to avoid heavy import at startup
+        import sys
+        from pathlib import Path as _Path
+        try:
+            # Ensure project root is on sys.path for 'src.' imports
+            root = _Path(__file__).resolve().parents[5]
+            if str(root) not in sys.path:
+                sys.path.append(str(root))
+        except Exception:
+            pass
+
+        try:
+            from src.lib.ml.inference.simulator import predict_with_and_without_transfer
+        except Exception as ie:
+            raise HTTPException(status_code=500, detail=f"Simulator import failed: {ie}")
+
+        res = predict_with_and_without_transfer(
+            team=request.team_name,
+            target_season=request.target_season,
+            incoming_player_name=request.incoming_player_name,
+            projected_minutes_in=request.projected_minutes_in,
+            outgoing_minutes=request.outgoing_minutes,
+            cross_league_scale=request.cross_league_scale,
+        )
+        return {
+            "team_name": request.team_name,
+            "incoming_player_name": request.incoming_player_name,
+            **res,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"What-if prediction failed: {str(e)}")
 
 def predict_fallback(player_data, team_data):
     """Fallback prediction using simple heuristics"""
