@@ -54,6 +54,8 @@ export default function Home() {
   const [predicting, setPredicting] = useState(false);
   const [projectedMinutes, setProjectedMinutes] = useState<number>(2000);
   const [outgoingMinutesText, setOutgoingMinutesText] = useState<string>('');
+  const [projectedMinutesError, setProjectedMinutesError] = useState<string>('');
+  const [outgoingMinutesError, setOutgoingMinutesError] = useState<string>('');
 
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -105,6 +107,37 @@ export default function Home() {
       return Object.keys(out).length ? out : undefined;
     };
 
+    if (!Number.isFinite(projectedMinutes) || projectedMinutes < 0 || projectedMinutes > 4000) {
+      setProjectedMinutesError('Projected minutes must be between 0 and 4000.');
+      return;
+    }
+    setProjectedMinutesError('');
+
+    let outgoingParsed: Record<string, number> | undefined = undefined;
+    if (outgoingMinutesText.trim()) {
+      const parts = outgoingMinutesText.split(',').map((p) => p.trim()).filter(Boolean);
+      const temp: Record<string, number> = {};
+      for (const part of parts) {
+        const [name, minsStr] = part.split(':').map((s) => s.trim());
+        const minsVal = parseInt(minsStr ?? '', 10);
+        if (!name || !Number.isFinite(minsVal) || minsVal < 0 || minsVal > 4000) {
+          setOutgoingMinutesError('Use "Name:Minutes" with minutes 0–4000, comma-separated.');
+          return;
+        }
+        temp[name] = minsVal;
+      }
+      outgoingParsed = Object.keys(temp).length ? temp : undefined;
+    }
+    setOutgoingMinutesError('');
+
+    const totalOutgoing = outgoingParsed ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0) : 0;
+    if (totalOutgoing !== projectedMinutes) {
+      const msg = `Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${projectedMinutes}).`;
+      setProjectedMinutesError(msg);
+      setOutgoingMinutesError(msg);
+      return;
+    }
+
     setPredicting(true);
     setPrediction(null);
     try {
@@ -116,7 +149,7 @@ export default function Home() {
           incoming_player_name: selectedPlayer.name,
           target_season: nextSeason,
           projected_minutes_in: projectedMinutes,
-          outgoing_minutes: parseOutgoing(outgoingMinutesText),
+          outgoing_minutes: outgoingParsed,
           cross_league_scale: 1.0,
         }),
       });
@@ -411,11 +444,44 @@ export default function Home() {
                   min={0}
                   max={4000}
                   value={projectedMinutes}
-                  onChange={(e) => setProjectedMinutes(parseInt(e.target.value || '0', 10))}
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value || '0', 10);
+                    setProjectedMinutes(Number.isFinite(v) ? v : 0);
+                    if (!Number.isFinite(v) || v < 0 || v > 4000) {
+                      setProjectedMinutesError('Projected minutes must be between 0 and 4000.');
+                      return;
+                    } else {
+                      setProjectedMinutesError('');
+                    }
+                    // Re-validate totals match when projected changes
+                    if (outgoingMinutesText.trim()) {
+                      const parts = outgoingMinutesText.split(',').map((p) => p.trim()).filter(Boolean);
+                      let sum = 0;
+                      for (const part of parts) {
+                        const [name, minsStr] = part.split(':').map((s) => s.trim());
+                        const minsVal = parseInt(minsStr ?? '', 10);
+                        if (!name || !Number.isFinite(minsVal) || minsVal < 0 || minsVal > 4000) {
+                          return; // format error handled separately
+                        }
+                        sum += minsVal;
+                      }
+                      if (sum !== (Number.isFinite(v) ? v : 0)) {
+                        const msg = `Total outgoing minutes (${sum}) must equal projected minutes (${Number.isFinite(v) ? v : 0}).`;
+                        setProjectedMinutesError(msg);
+                        setOutgoingMinutesError(msg);
+                      } else {
+                        setProjectedMinutesError('');
+                        setOutgoingMinutesError('');
+                      }
+                    }
+                  }}
+                  className={`w-full px-3 py-2 border ${projectedMinutesError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     projectedMinutes ? 'text-slate-900' : 'text-slate-500'
                   }`}
                 />
+                {projectedMinutesError && (
+                  <p className="mt-1 text-xs text-red-600">{projectedMinutesError}</p>
+                )}
               </div>
               <div className="p-4 border border-gray-200 rounded-lg">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Outgoing Minutes (optional)</label>
@@ -423,12 +489,43 @@ export default function Home() {
                   type="text"
                   placeholder="e.g., Gabriel Jesus:1200, Trossard:600"
                   value={outgoingMinutesText}
-                  onChange={(e) => setOutgoingMinutesText(e.target.value)}
-                  className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setOutgoingMinutesText(val);
+                    if (!val.trim()) { setOutgoingMinutesError(''); return; }
+                    const parts = val.split(',').map((p) => p.trim()).filter(Boolean);
+                    for (const part of parts) {
+                      const [name, minsStr] = part.split(':').map((s) => s.trim());
+                      const minsVal = parseInt(minsStr ?? '', 10);
+                      if (!name || !Number.isFinite(minsVal) || minsVal < 0 || minsVal > 4000) {
+                        setOutgoingMinutesError('Use "Name:Minutes" with minutes 0–4000, comma-separated.');
+                        return;
+                      }
+                    }
+                    // Validate totals match
+                    let sum = 0;
+                    for (const part of parts) {
+                      const [_, minsStr] = part.split(':').map((s) => s.trim());
+                      const minsVal = parseInt(minsStr ?? '', 10);
+                      sum += Number.isFinite(minsVal) ? minsVal : 0;
+                    }
+                    if (sum !== projectedMinutes) {
+                      const msg = `Total outgoing minutes (${sum}) must equal projected minutes (${projectedMinutes}).`;
+                      setOutgoingMinutesError(msg);
+                      setProjectedMinutesError(msg);
+                    } else {
+                      setOutgoingMinutesError('');
+                      setProjectedMinutesError('');
+                    }
+                  }}
+                  className={`w-full px-3 py-2 border ${outgoingMinutesError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     outgoingMinutesText ? 'text-slate-900' : 'text-slate-500'
                   }`}
                 />
                 <p className="mt-1 text-xs text-gray-500">Format: Name:Minutes, Name2:Minutes</p>
+                {outgoingMinutesError && (
+                  <p className="mt-1 text-xs text-red-600">{outgoingMinutesError}</p>
+                )}
               </div>
             </div>
 
