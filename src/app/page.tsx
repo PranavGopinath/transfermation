@@ -426,12 +426,12 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="p-4 border border-gray-200 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-2">Selected Player</h3>
-                <p className="text-lg">{selectedPlayer.name}</p>
+                <p className="text-lg text-slate-700">{selectedPlayer.name}</p>
                 <p className="text-sm text-gray-600">{selectedPlayer.primary_pos} • {selectedPlayer.nation}</p>
               </div>
               <div className="p-4 border border-gray-200 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-2">Destination Team</h3>
-                <p className="text-lg">{selectedTeam.name}</p>
+                <p className="text-lg text-slate-700">{selectedTeam.name}</p>
                 <p className="text-sm text-gray-600">{selectedTeam.league} • {selectedTeam.country}</p>
               </div>
             </div>
@@ -461,7 +461,7 @@ export default function Home() {
                         const [name, minsStr] = part.split(':').map((s) => s.trim());
                         const minsVal = parseInt(minsStr ?? '', 10);
                         if (!name || !Number.isFinite(minsVal) || minsVal < 0 || minsVal > 4000) {
-                          return; // format error handled separately
+                          return;
                         }
                         sum += minsVal;
                       }
