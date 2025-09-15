@@ -28,6 +28,7 @@ interface Team {
   wins_2425: number | null;
   points_2425: number | null;
   position_2425: number | null;
+  losses_2425: number | null;
 }
 
 interface Transfer {
@@ -281,7 +282,7 @@ export default function Home() {
             {/* Player Search */}
             <div className="relative">
               <label htmlFor="playerSearch" className="block text-sm font-medium text-foreground mb-2">
-                Search by Player Name
+                Search Player Name
               </label>
               <input
                 type="text"
@@ -323,10 +324,11 @@ export default function Home() {
                               {player.teams} • {player.primary_pos}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {player.total_goals}G {player.total_assists}A • {player.total_matches} matches • {player.seasons_count} seasons
+                              {player.total_goals}G {player.total_assists}A • {player.total_matches} matches • 
                             </p>
-                          </div>
                           <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.nation}</span>
+
+                          </div>
                         </div>
                       </div>
                     ))
@@ -382,7 +384,6 @@ export default function Home() {
                               {team.league} • {team.country}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
                               {team.position_2425 && ` • ${team.position_2425}${getOrdinalSuffix(team.position_2425)}`}
                             </p>
                           </div>
@@ -405,35 +406,133 @@ export default function Home() {
           </div>
         </div>
 
+
         {/* Prediction Section */}
-        {selectedPlayer && selectedTeam && (
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
+
+        {(selectedPlayer || selectedTeam) && (
+          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6 w-full">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold text-foreground">Transfer Impact Prediction</h2>
               <button
                 onClick={predictImpact}
                 disabled={predicting}
-                className={`px-6 py-2 rounded-md font-medium ${
+                className={`group relative px-6 py-2 rounded-md font-medium transition-all duration-300 transform ${
                   predicting
                     ? 'bg-muted text-background cursor-not-allowed'
-                    : 'bg-primary text-background hover:opacity-90'
+                    : 'bg-primary text-background hover:bg-primary/90 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-95'
                 }`}
               >
-                {predicting ? 'Predicting...' : 'Predict Impact'}
+                <span className="relative z-10">
+                  {predicting ? 'Predicting...' : 'Predict Impact'}
+                </span>
+                {!predicting && (
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                )}
+                {predicting && (
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-r from-muted/50 to-transparent animate-pulse" />
+                )}
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="p-4 border border-border rounded-lg">
-                <h3 className="font-semibold text-foreground mb-2">Selected Player</h3>
-                <p className="text-lg text-foreground">{selectedPlayer.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedPlayer.primary_pos} • {selectedPlayer.nation}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 h-full items-stretch">
+            {playerSearch && (searchResults?.length ?? 0) > 0 && (
+          <div className="bg-card text-card-foreground rounded-lg shadow-md h-full">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Player</h2>
+            <div className="grid grid-cols-1 gap-4 w-full">
+              {searchResults
+                .filter((p) => p.name.toLowerCase() === playerSearch.toLowerCase())
+                .slice(0, 3)
+                .map((player) => (
+                  <div key={player.id} className="border border-border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-semibold text-foreground">{player.name}</h3>
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.primary_pos}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <div className="font-medium">{player.teams}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {player.first_season} - {player.last_season} • {player.nation}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_goals}</div>
+                        <div className="text-xs text-muted-foreground">Total Goals</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_assists}</div>
+                        <div className="text-xs text-muted-foreground">Total Assists</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_matches}</div>
+                        <div className="text-xs text-muted-foreground">Total Matches</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.seasons_count}</div>
+                        <div className="text-xs text-muted-foreground">Seasons</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+              {teamSearch && (teamSearchResults?.length ?? 0) > 0 && (
+          <div className="bg-card text-card-foreground rounded-lg shadow-md h-full">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Team</h2>
+            <div className="grid grid-cols-1 gap-4 w-full">
+              {teamSearchResults
+                .filter((t) => t.name.toLowerCase() === teamSearch.toLowerCase())
+                .slice(0, 3)
+                .map((team) => (
+                  <div key={team.id} className="border border-border rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">{team.name}</h3>
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{team.league}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <div className="font-medium flex items-center gap-2">
+                        <img 
+                          src={getCountryFlag(team.country)} 
+                          alt={team.country} 
+                          className="w-4 h-4"
+                        />
+                        {team.country}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
+                          {team.position_2425 ? `${team.position_2425}${getOrdinalSuffix(team.position_2425)}` : 'N/A'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Position</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
+                          {team.points_2425 || 'N/A'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Points</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
+                          {team.wins_2425 || 'N/A'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Wins</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
+                          {team.losses_2425 || 'N/A'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Losses</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="p-4 border border-border rounded-lg">
-                <h3 className="font-semibold text-foreground mb-2">Destination Team</h3>
-                <p className="text-lg text-foreground">{selectedTeam.name}</p>
-                <p className="text-sm text-muted-foreground">{selectedTeam.league} • {selectedTeam.country}</p>
               </div>
+        )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -552,94 +651,8 @@ export default function Home() {
           </div>
         )}
 
-        {playerSearch && (searchResults?.length ?? 0) > 0 && (
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Player</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {searchResults
-                .filter((p) => p.name.toLowerCase() === playerSearch.toLowerCase())
-                .slice(0, 3)
-                .map((player) => (
-                  <div key={player.id} className="border border-border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-foreground">{player.name}</h3>
-                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.primary_pos}</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      <div className="font-medium">{player.teams}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {player.first_season} - {player.last_season} • {player.nation}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">{player.total_goals}</div>
-                        <div className="text-xs text-muted-foreground">Total Goals</div>
-                      </div>
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">{player.total_assists}</div>
-                        <div className="text-xs text-muted-foreground">Total Assists</div>
-                      </div>
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">{player.total_matches}</div>
-                        <div className="text-xs text-muted-foreground">Total Matches</div>
-                      </div>
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">{player.seasons_count}</div>
-                        <div className="text-xs text-muted-foreground">Seasons</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
         {/* Selected Team Display */}
-        {teamSearch && (teamSearchResults?.length ?? 0) > 0 && (
-          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Team</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teamSearchResults
-                .filter((t) => t.name.toLowerCase() === teamSearch.toLowerCase())
-                .slice(0, 3)
-                .map((team) => (
-                  <div key={team.id} className="border border-border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-foreground">{team.name}</h3>
-                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{team.league}</span>
-                    </div>
-                    <div className="text-sm text-muted-foreground mb-2">
-                      <div className="font-medium">{team.country}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">
-                          {team.position_2425 ? `${team.position_2425}${getOrdinalSuffix(team.position_2425)}` : 'N/A'}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Position</div>
-                      </div>
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">
-                          {team.points_2425 || 'N/A'}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Points</div>
-                      </div>
-                      <div className="text-center p-2 bg-muted rounded">
-                        <div className="font-semibold text-primary">
-                          {team.wins_2425 || 'N/A'}
-                        </div>
-                        <div className="text-xs text-muted-foreground">Wins</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );

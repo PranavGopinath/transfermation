@@ -2,17 +2,17 @@
 
 :root {
   /* Dark theme colors */
-  --background: #363537;            
+  --background: #1e1e24;            
   --foreground: #80CCDC;            
-  --card: #363537;                  
+  --card: #1e1e24;                  
   --card-foreground: #80CCDC;
-  --popover: #363537;
+  --popover: #1e1e24;
   --popover-foreground: #80CCDC;
   --primary: #80CCDC;               
   --primary-foreground: #ffffff;
   --secondary: #80CCDC;            
-  --secondary-foreground: #363537;  
-  --muted: #363537;
+  --secondary-foreground: #1e1e24;  
+  --muted: #1e1e24;
   --muted-foreground: #80CCDC;
   --accent: #ba274a;                
   --accent-foreground: #ffffff;
