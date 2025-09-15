@@ -21,7 +21,8 @@ def search_teams(q: str):
             true AS active_2024_2025,
             tm.wins_2425,
             tm.points_2425,
-            tm.position_2425
+            tm.position_2425,
+            tm.losses_2425
         FROM teams tm
         WHERE unaccent(LOWER(tm.name)) LIKE unaccent(LOWER(%s))
           AND tm.league IN (

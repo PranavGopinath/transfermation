@@ -69,7 +69,8 @@ def get_player_features(player_id: int, team_id: int):
                 tm.country,
                 tm.position_2425,
                 tm.points_2425,
-                tm.wins_2425
+                tm.wins_2425,
+                tm.losses_2425
             FROM teams tm
             WHERE tm.id = %s
         """, (team_id,))
@@ -100,6 +101,7 @@ def create_feature_vector(player_data, team_data):
         'team_position': team_data['position_2425'] or 20, 
         'team_points': team_data['points_2425'] or 0,
         'team_wins': team_data['wins_2425'] or 0,
+        'team_losses': team_data['losses_2425'] or 0,
     }
     
     feature_vector = np.array([
@@ -111,6 +113,7 @@ def create_feature_vector(player_data, team_data):
         features['team_position'],
         features['team_points'],
         features['team_wins'],
+        features['team_losses'],
     ]).reshape(1, -1)
     
     return feature_vector
@@ -147,6 +150,8 @@ def predict_impact(request: PredictionRequest):
                 "player_assists_per_match": round((player_data['total_assists'] or 0) / max(player_data['total_matches'] or 1, 1), 2),
                 "team_position": team_data['position_2425'],
                 "team_points": team_data['points_2425'],
+                "team_wins": team_data['wins_2425'],
+                "team_losses": team_data['losses_2425'],
             }
         }
         
