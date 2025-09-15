@@ -2,25 +2,25 @@
 
 :root {
   /* Dark theme colors */
-  --background: #0f0f0f;
-  --foreground: #f8fafc;
-  --card: #1a1a1a;
-  --card-foreground: #f1f5f9;
-  --popover: #1a1a1a;
-  --popover-foreground: #f1f5f9;
-  --primary: #3b82f6;
+  --background: #363537;            
+  --foreground: #80CCDC;            
+  --card: #363537;                  
+  --card-foreground: #80CCDC;
+  --popover: #363537;
+  --popover-foreground: #80CCDC;
+  --primary: #80CCDC;               
   --primary-foreground: #ffffff;
-  --secondary: #262626;
-  --secondary-foreground: #e2e8f0;
-  --muted: #262626;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f1f5f9;
-  --destructive: #ef4444;
+  --secondary: #80CCDC;            
+  --secondary-foreground: #363537;  
+  --muted: #363537;
+  --muted-foreground: #80CCDC;
+  --accent: #ba274a;                
+  --accent-foreground: #ffffff;
+  --destructive: #ba274a;           
   --destructive-foreground: #ffffff;
-  --border: #374151;
-  --input: #374151;
-  --ring: #3b82f6;
+  --border: #80CCDC;               
+  --input: #80CCDC;                
+  --ring: #80CCDC;                  
   --radius: 0.75rem;
   
   /* Custom gradients */

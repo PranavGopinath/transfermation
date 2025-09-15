@@ -251,26 +251,26 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Transfermation</h1>
-          <p className="text-gray-600">Discover the predicted impact of your team's dream signings</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Transfermation</h1>
+          <p className="text-muted-foreground">Discover the predicted impact of your team's dream signings</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${usingFallback ? 'bg-yellow-500' : 'bg-green-500'}`}></div>
-              <span className="text-sm text-gray-600">
+              <div className={`w-2 h-2 rounded-full ${usingFallback ? 'bg-destructive' : 'bg-secondary'}`}></div>
+              <span className="text-sm text-muted-foreground">
                 {usingFallback ? 'FastAPI server offline' : 'Connected to player database'}
               </span>
             </div>
             {usingFallback && (
               <button
                 onClick={() => window.location.reload()}
-                className="text-xs text-blue-600 hover:text-blue-800 underline"
+                className="text-xs text-primary hover:underline"
               >
                 Retry connection
               </button>
@@ -280,7 +280,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Player Search */}
             <div className="relative">
-              <label htmlFor="playerSearch" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="playerSearch" className="block text-sm font-medium text-foreground mb-2">
                 Search by Player Name
               </label>
               <input
@@ -295,20 +295,20 @@ export default function Home() {
                 }}
                 onFocus={() => {setShowResults(true);
                  console.log('3')}}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  playerSearch ? 'text-slate-900' : 'text-slate-500'
+                className={`w-full px-4 py-2 border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  playerSearch ? 'text-foreground' : 'text-muted-foreground'
                 }`}
               />
 
               {showResults && (loading || searchResults.length > 0) && (
-                <div className="search-dropdown absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
                   {loading ? (
-                    <div className="px-4 py-2 text-gray-500 text-center">Searching...</div>
+                    <div className="px-4 py-2 text-muted-foreground text-center">Searching...</div>
                   ) : searchResults.length > 0 ? (
                     searchResults.map((player) => (
                       <div
                         key={player.id}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                        className="px-4 py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
                           setPlayerSearch(player.name);
@@ -318,20 +318,20 @@ export default function Home() {
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-medium text-gray-900">{player.name}</h4>
-                            <p className="text-sm text-gray-600">
+                            <h4 className="font-medium text-foreground">{player.name}</h4>
+                            <p className="text-sm text-muted-foreground">
                               {player.teams} • {player.primary_pos}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {player.total_goals}G {player.total_assists}A • {player.total_matches} matches • {player.seasons_count} seasons
                             </p>
                           </div>
-                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{player.nation}</span>
+                          <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.nation}</span>
                         </div>
                       </div>
                     ))
                   ) : playerSearch.trim().length >= 2 ? (
-                    <div className="px-4 py-2 text-gray-500 text-center">No players found</div>
+                    <div className="px-4 py-2 text-muted-foreground text-center">No players found</div>
                   ) : null}
                 </div>
               )}
@@ -339,7 +339,7 @@ export default function Home() {
 
             {/* Team Search */}
             <div className="relative">
-              <label htmlFor="teamSearch" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="teamSearch" className="block text-sm font-medium text-foreground mb-2">
                 Search by Destination Team
               </label>
               <input
@@ -352,21 +352,21 @@ export default function Home() {
                   setShowTeamResults(true);
                 }}
                 onFocus={() => setShowTeamResults(true)}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  teamSearch ? 'text-slate-900' : 'text-slate-500'
+                className={`w-full px-4 py-2 border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                  teamSearch ? 'text-foreground' : 'text-muted-foreground'
                 }`}
               />
 
               {/* Team Results */}
               {showTeamResults && (teamLoading || teamSearchResults.length > 0) && (
-                <div className="search-dropdown absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
                   {teamLoading ? (
-                    <div className="px-4 py-2 text-gray-500 text-center">Searching...</div>
+                    <div className="px-4 py-2 text-muted-foreground text-center">Searching...</div>
                   ) : teamSearchResults.length > 0 ? (
                     teamSearchResults.map((team) => (
                       <div
                         key={team.id}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                        className="px-4 py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
                           setTeamSearch(team.name);
@@ -377,11 +377,11 @@ export default function Home() {
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-medium text-gray-900">{team.name}</h4>
-                            <p className="text-sm text-gray-600">
+                            <h4 className="font-medium text-foreground">{team.name}</h4>
+                            <p className="text-sm text-muted-foreground">
                               {team.league} • {team.country}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
                               {team.position_2425 && ` • ${team.position_2425}${getOrdinalSuffix(team.position_2425)}`}
                             </p>
@@ -407,16 +407,16 @@ export default function Home() {
 
         {/* Prediction Section */}
         {selectedPlayer && selectedTeam && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Transfer Impact Prediction</h2>
+              <h2 className="text-xl font-semibold text-foreground">Transfer Impact Prediction</h2>
               <button
                 onClick={predictImpact}
                 disabled={predicting}
                 className={`px-6 py-2 rounded-md font-medium ${
                   predicting
-                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-muted text-background cursor-not-allowed'
+                    : 'bg-primary text-background hover:opacity-90'
                 }`}
               >
                 {predicting ? 'Predicting...' : 'Predict Impact'}
@@ -424,21 +424,21 @@ export default function Home() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-2">Selected Player</h3>
-                <p className="text-lg text-slate-700">{selectedPlayer.name}</p>
-                <p className="text-sm text-gray-600">{selectedPlayer.primary_pos} • {selectedPlayer.nation}</p>
+              <div className="p-4 border border-border rounded-lg">
+                <h3 className="font-semibold text-foreground mb-2">Selected Player</h3>
+                <p className="text-lg text-foreground">{selectedPlayer.name}</p>
+                <p className="text-sm text-muted-foreground">{selectedPlayer.primary_pos} • {selectedPlayer.nation}</p>
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-2">Destination Team</h3>
-                <p className="text-lg text-slate-700">{selectedTeam.name}</p>
-                <p className="text-sm text-gray-600">{selectedTeam.league} • {selectedTeam.country}</p>
+              <div className="p-4 border border-border rounded-lg">
+                <h3 className="font-semibold text-foreground mb-2">Destination Team</h3>
+                <p className="text-lg text-foreground">{selectedTeam.name}</p>
+                <p className="text-sm text-muted-foreground">{selectedTeam.league} • {selectedTeam.country}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Projected Minutes for Incoming Player</label>
+              <div className="p-4 border border-border rounded-lg">
+                <label className="block text-sm font-medium text-foreground mb-2">Projected Minutes for Incoming Player</label>
                 <input
                   type="number"
                   min={0}
@@ -475,16 +475,16 @@ export default function Home() {
                       }
                     }
                   }}
-                  className={`w-full px-3 py-2 border ${projectedMinutesError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    projectedMinutes ? 'text-slate-900' : 'text-slate-500'
+                  className={`w-full px-3 py-2 border ${projectedMinutesError ? 'border-destructive' : 'border-border'} rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                    projectedMinutes ? 'text-foreground' : 'text-muted-foreground'
                   }`}
                 />
                 {projectedMinutesError && (
-                  <p className="mt-1 text-xs text-red-600">{projectedMinutesError}</p>
+                  <p className="mt-1 text-xs text-destructive">{projectedMinutesError}</p>
                 )}
               </div>
-              <div className="p-4 border border-gray-200 rounded-lg">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Outgoing Minutes (optional)</label>
+              <div className="p-4 border border-border rounded-lg">
+                <label className="block text-sm font-medium text-foreground mb-2">Outgoing Minutes (optional)</label>
                 <input
                   type="text"
                   placeholder="e.g., Gabriel Jesus:1200, Trossard:600"
@@ -518,75 +518,75 @@ export default function Home() {
                       setProjectedMinutesError('');
                     }
                   }}
-                  className={`w-full px-3 py-2 border ${outgoingMinutesError ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    outgoingMinutesText ? 'text-slate-900' : 'text-slate-500'
+                  className={`w-full px-3 py-2 border ${outgoingMinutesError ? 'border-destructive' : 'border-border'} rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+                    outgoingMinutesText ? 'text-foreground' : 'text-muted-foreground'
                   }`}
                 />
-                <p className="mt-1 text-xs text-gray-500">Format: Name:Minutes, Name2:Minutes</p>
+                <p className="mt-1 text-xs text-muted-foreground">Format: Name:Minutes, Name2:Minutes</p>
                 {outgoingMinutesError && (
-                  <p className="mt-1 text-xs text-red-600">{outgoingMinutesError}</p>
+                  <p className="mt-1 text-xs text-destructive">{outgoingMinutesError}</p>
                 )}
               </div>
             </div>
 
             {prediction && (
-              <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Predicted Team Points Impact</h3>
+              <div className="mt-4 p-4 rounded-lg" style={{ background: 'var(--gradient-primary)' }}>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Predicted Team Points Impact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600">{prediction.points_base?.toFixed ? prediction.points_base.toFixed(1) : prediction.points_base}</div>
-                    <div className="text-sm text-gray-600">Baseline Points</div>
+                    <div className="text-3xl font-bold text-primary">{prediction.points_base?.toFixed ? prediction.points_base.toFixed(1) : prediction.points_base}</div>
+                    <div className="text-sm text-foreground">Baseline Points</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">{prediction.points_with?.toFixed ? prediction.points_with.toFixed(1) : prediction.points_with}</div>
-                    <div className="text-sm text-gray-600">With Transfer</div>
+                    <div className="text-3xl font-bold text-primary">{prediction.points_with?.toFixed ? prediction.points_with.toFixed(1) : prediction.points_with}</div>
+                    <div className="text-sm text-foreground">With Transfer</div>
                   </div>
                   <div className="text-center">
-                    <div className={`text-3xl font-bold ${prediction.delta >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{prediction.delta?.toFixed ? prediction.delta.toFixed(1) : prediction.delta}</div>
-                    <div className="text-sm text-gray-600">Delta (± points)</div>
+                    <div className={`text-3xl font-bold ${prediction.delta >= 0 ? 'text-primary' : 'text-destructive'}`}>{prediction.delta?.toFixed ? prediction.delta.toFixed(1) : prediction.delta}</div>
+                    <div className="text-sm text-foreground">Delta (± points)</div>
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-600">Season: {prediction.season_target} (features from {prediction.season_features_from})</div>
+                <div className="mt-2 text-sm text-foreground">Season: {prediction.season_target} (features from {prediction.season_features_from})</div>
               </div>
             )}
           </div>
         )}
 
         {playerSearch && (searchResults?.length ?? 0) > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Selected Player</h2>
+          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Player</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {searchResults
                 .filter((p) => p.name.toLowerCase() === playerSearch.toLowerCase())
                 .slice(0, 3)
                 .map((player) => (
-                  <div key={player.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={player.id} className="border border-border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{player.name}</h3>
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{player.primary_pos}</span>
+                      <h3 className="text-lg font-semibold text-foreground">{player.name}</h3>
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.primary_pos}</span>
                     </div>
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div className="text-sm text-muted-foreground mb-2">
                       <div className="font-medium">{player.teams}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {player.first_season} - {player.last_season} • {player.nation}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-blue-600">{player.total_goals}</div>
-                        <div className="text-xs text-gray-500">Total Goals</div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_goals}</div>
+                        <div className="text-xs text-muted-foreground">Total Goals</div>
                       </div>
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-green-600">{player.total_assists}</div>
-                        <div className="text-xs text-gray-500">Total Assists</div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_assists}</div>
+                        <div className="text-xs text-muted-foreground">Total Assists</div>
                       </div>
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-purple-600">{player.total_matches}</div>
-                        <div className="text-xs text-gray-500">Total Matches</div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.total_matches}</div>
+                        <div className="text-xs text-muted-foreground">Total Matches</div>
                       </div>
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-orange-600">{player.seasons_count}</div>
-                        <div className="text-xs text-gray-500">Seasons</div>
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">{player.seasons_count}</div>
+                        <div className="text-xs text-muted-foreground">Seasons</div>
                       </div>
                     </div>
                   </div>
@@ -597,42 +597,42 @@ export default function Home() {
 
         {/* Selected Team Display */}
         {teamSearch && (teamSearchResults?.length ?? 0) > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Selected Team</h2>
+          <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Selected Team</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {teamSearchResults
                 .filter((t) => t.name.toLowerCase() === teamSearch.toLowerCase())
                 .slice(0, 3)
                 .map((team) => (
-                  <div key={team.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={team.id} className="border border-border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{team.name}</h3>
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{team.league}</span>
+                      <h3 className="text-lg font-semibold text-foreground">{team.name}</h3>
+                      <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{team.league}</span>
                     </div>
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div className="text-sm text-muted-foreground mb-2">
                       <div className="font-medium">{team.country}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {team.active_2024_2025 ? 'Current Season' : `Last: ${team.latest_season}`}
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-blue-600">
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
                           {team.position_2425 ? `${team.position_2425}${getOrdinalSuffix(team.position_2425)}` : 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Position</div>
+                        <div className="text-xs text-muted-foreground">Position</div>
                       </div>
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-green-600">
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
                           {team.points_2425 || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Points</div>
+                        <div className="text-xs text-muted-foreground">Points</div>
                       </div>
-                      <div className="text-center p-2 bg-gray-50 rounded">
-                        <div className="font-semibold text-purple-600">
+                      <div className="text-center p-2 bg-muted rounded">
+                        <div className="font-semibold text-primary">
                           {team.wins_2425 || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-500">Wins</div>
+                        <div className="text-xs text-muted-foreground">Wins</div>
                       </div>
                     </div>
                   </div>
