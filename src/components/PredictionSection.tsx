@@ -69,7 +69,7 @@ export default function PredictionSection({
             <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           )}
           {predicting && (
-            <div className="absolute inset-0 rounded-md bg-gradient-to-r from-muted/50 to-transparent animate-pulse" />
+            <div className="absolute inset-0 rounded-md bg-gradient-to-r from-primary/40 to-transparent animate-pulse" />
           )}
         </button>
       </div>
