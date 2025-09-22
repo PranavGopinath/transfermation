@@ -6,6 +6,9 @@ import PlayerSearch from '@/components/PlayerSearch';
 import TeamSearch from '@/components/TeamSearch';
 import PredictionSection from '@/components/PredictionSection';
 import ConnectionStatus from '@/components/ConnectionStatus';
+import Image from 'next/image';
+import base from '../../public/base.svg';
+import base2 from '../../public/base2.svg';
 
 export default function Home() {
   const [playerSearch, setPlayerSearch] = useState('');
@@ -112,13 +115,29 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
+    <div className="min-h-screen bg-background text-foreground pb-6">
+
+<section className="relative h-[100svh] w-screen"> {/* use h-screen if you prefer */}
+    <Image
+      src={base}
+      alt="Base"
+      fill
+      className="object-cover"
+      priority
+      sizes="100vw"
+    />
+    <div className="absolute inset-0 bg-black/50" />
+    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+      <h1 className="text-5xl md:text-7xl font-serif text-[#EDE6B9] mb-3">
+        Transfermation
+      </h1>
+      <p className="text-[#EDE6B9]/90">
+        Discover the predicted impact of your team's dream signing.
+      </p>
+    </div>
+  </section>
+  <Image src={base2} alt="Base2" className="w-full h-auto" />
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Transfermation</h1>
-          <p className="text-muted-foreground">Discover the predicted impact of your team's dream signings</p>
-        </div>
 
         <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
           <ConnectionStatus usingFallback={usingFallback} />
