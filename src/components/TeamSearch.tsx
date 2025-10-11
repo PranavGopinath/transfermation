@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Team } from '@/types';
+import Image from 'next/image';
 
 interface TeamSearchProps {
   teamSearch: string;
@@ -78,7 +79,7 @@ export default function TeamSearch({
     } finally {
       setTeamLoading(false);
     }
-  }, [baseUrl, setTeamSearchResults, setTeamLoading, setUsingFallback]);
+  }, [baseUrl, setTeamSearchResults, setTeamLoading, setUsingFallback, setShowTeamResults]);
 
   useEffect(() => {
     const t = setTimeout(() => searchTeams(teamSearch), 300);
@@ -134,9 +135,11 @@ export default function TeamSearch({
                     </p>
                   </div>
                   <div className="flex flex-col items-end">
-                    <img 
+                    <Image 
                       src={getCountryFlag(team.country)} 
                       alt={team.country} 
+                      width={24}
+                      height={24}
                       className="w-6 h-6"
                     />
                   </div>

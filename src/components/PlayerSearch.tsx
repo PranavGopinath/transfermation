@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Player } from '@/types';
 
 interface PlayerSearchProps {
@@ -58,7 +58,7 @@ export default function PlayerSearch({
     } finally {
       setLoading(false);
     }
-  }, [baseUrl, setSearchResults, setLoading, setUsingFallback]);
+  }, [baseUrl, setSearchResults, setLoading, setUsingFallback, setShowResults]);
 
   useEffect(() => {
     const t = setTimeout(() => searchPlayers(playerSearch), 300);

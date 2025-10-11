@@ -22,7 +22,13 @@ export default function Home() {
   const [usingFallback, setUsingFallback] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-  const [prediction, setPrediction] = useState<any>(null);
+  const [prediction, setPrediction] = useState<{
+    points_base: number;
+    points_with: number;
+    delta: number;
+    season_target: string;
+    season_features_from: string;
+  } | null>(null);
   const [predicting, setPredicting] = useState(false);
   const [projectedMinutes, setProjectedMinutes] = useState<number>(2000);
   const [outgoingMinutesText, setOutgoingMinutesText] = useState<string>('');
@@ -132,7 +138,7 @@ export default function Home() {
         Transfermation
       </h1>
       <p className="text-[#EDE6B9]/90">
-        Discover the predicted impact of your team's dream signing.
+        Discover the predicted impact of your team&apos;s dream signing.
       </p>
     </div>
   </section>

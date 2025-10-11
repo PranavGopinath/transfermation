@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import React from 'react';
 import { Player, Team } from '@/types';
 import PlayerCard from './PlayerCard';
 import TeamCard from './TeamCard';
@@ -14,7 +14,13 @@ interface PredictionSectionProps {
   teamSearchResults: Team[];
   predictImpact: () => void;
   predicting: boolean;
-  prediction: any;
+  prediction: {
+    points_base: number;
+    points_with: number;
+    delta: number;
+    season_target: string;
+    season_features_from: string;
+  } | null;
   projectedMinutes: number;
   setProjectedMinutes: (minutes: number) => void;
   outgoingMinutesText: string;
@@ -24,8 +30,6 @@ interface PredictionSectionProps {
 }
 
 export default function PredictionSection({
-  selectedPlayer,
-  selectedTeam,
   playerSearch,
   searchResults,
   teamSearch,
@@ -40,14 +44,6 @@ export default function PredictionSection({
   projectedMinutesError,
   outgoingMinutesError,
 }: PredictionSectionProps) {
-  const getOrdinalSuffix = (num: number): string => {
-    const j = num % 10;
-    const k = num % 100;
-    if (j === 1 && k !== 11) return 'st';
-    if (j === 2 && k !== 12) return 'nd';
-    if (j === 3 && k !== 13) return 'rd';
-    return 'th';
-  };
 
   return (
     <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6 w-full">

@@ -1,6 +1,7 @@
 'use client';
 
 import { Team } from '@/types';
+import Image from 'next/image';
 
 interface TeamCardProps {
   team: Team;
@@ -35,9 +36,11 @@ export default function TeamCard({ team }: TeamCardProps) {
       </div>
       <div className="text-sm text-muted-foreground mb-2">
         <div className="font-medium flex items-center gap-2">
-          <img 
+          <Image 
             src={getCountryFlag(team.country)} 
             alt={team.country} 
+            width={16}
+            height={16}
             className="w-4 h-4"
           />
           {team.country}
