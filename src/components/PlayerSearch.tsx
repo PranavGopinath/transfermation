@@ -13,7 +13,6 @@ interface PlayerSearchProps {
   showResults: boolean;
   setShowResults: (show: boolean) => void;
   setSelectedPlayer: (player: Player | null) => void;
-  usingFallback: boolean;
   setUsingFallback: (fallback: boolean) => void;
 }
 
@@ -27,7 +26,6 @@ export default function PlayerSearch({
   showResults,
   setShowResults,
   setSelectedPlayer,
-  usingFallback,
   setUsingFallback,
 }: PlayerSearchProps) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';

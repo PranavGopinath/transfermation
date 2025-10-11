@@ -159,7 +159,6 @@ export default function Home() {
               showResults={showResults}
               setShowResults={setShowResults}
               setSelectedPlayer={setSelectedPlayer}
-              usingFallback={usingFallback}
               setUsingFallback={setUsingFallback}
             />
 
@@ -173,7 +172,6 @@ export default function Home() {
               showTeamResults={showTeamResults}
               setShowTeamResults={setShowTeamResults}
               setSelectedTeam={setSelectedTeam}
-              usingFallback={usingFallback}
               setUsingFallback={setUsingFallback}
             />
           </div>

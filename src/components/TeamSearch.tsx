@@ -14,7 +14,6 @@ interface TeamSearchProps {
   showTeamResults: boolean;
   setShowTeamResults: (show: boolean) => void;
   setSelectedTeam: (team: Team | null) => void;
-  usingFallback: boolean;
   setUsingFallback: (fallback: boolean) => void;
 }
 
@@ -28,7 +27,6 @@ export default function TeamSearch({
   showTeamResults,
   setShowTeamResults,
   setSelectedTeam,
-  usingFallback,
   setUsingFallback,
 }: TeamSearchProps) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
