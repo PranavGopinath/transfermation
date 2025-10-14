@@ -13,7 +13,6 @@ interface PlayerSearchProps {
   showResults: boolean;
   setShowResults: (show: boolean) => void;
   setSelectedPlayer: (player: Player | null) => void;
-  setUsingFallback: (fallback: boolean) => void;
 }
 
 export default function PlayerSearch({
@@ -26,7 +25,6 @@ export default function PlayerSearch({
   showResults,
   setShowResults,
   setSelectedPlayer,
-  setUsingFallback,
 }: PlayerSearchProps) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -44,11 +42,9 @@ export default function PlayerSearch({
         const text = await response.text();
         console.error('Player search failed:', response.status, text);
         setSearchResults([]);
-        setUsingFallback(true);
       } else {
         const data = await response.json();
         setSearchResults(data);
-        setUsingFallback(false);
       }
     } catch (err) {
       console.error('Error searching players:', err);
@@ -56,7 +52,7 @@ export default function PlayerSearch({
     } finally {
       setLoading(false);
     }
-  }, [baseUrl, setSearchResults, setLoading, setUsingFallback, setShowResults]);
+  }, [baseUrl, setSearchResults, setLoading, setShowResults]);
 
   useEffect(() => {
     const t = setTimeout(() => searchPlayers(playerSearch), 300);

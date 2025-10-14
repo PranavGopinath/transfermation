@@ -14,7 +14,6 @@ interface TeamSearchProps {
   showTeamResults: boolean;
   setShowTeamResults: (show: boolean) => void;
   setSelectedTeam: (team: Team | null) => void;
-  setUsingFallback: (fallback: boolean) => void;
 }
 
 export default function TeamSearch({
@@ -27,7 +26,6 @@ export default function TeamSearch({
   showTeamResults,
   setShowTeamResults,
   setSelectedTeam,
-  setUsingFallback,
 }: TeamSearchProps) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000';
 
@@ -65,11 +63,9 @@ export default function TeamSearch({
         const text = await response.text();
         console.error('Team search failed:', response.status, text);
         setTeamSearchResults([]);
-        setUsingFallback(true);
       } else {
         const data = await response.json();
         setTeamSearchResults(data);
-        setUsingFallback(false);
       }
     } catch (err) {
       console.error('Error searching teams:', err);
@@ -77,7 +73,7 @@ export default function TeamSearch({
     } finally {
       setTeamLoading(false);
     }
-  }, [baseUrl, setTeamSearchResults, setTeamLoading, setUsingFallback, setShowTeamResults]);
+  }, [baseUrl, setTeamSearchResults, setTeamLoading, setShowTeamResults]);
 
   useEffect(() => {
     const t = setTimeout(() => searchTeams(teamSearch), 300);

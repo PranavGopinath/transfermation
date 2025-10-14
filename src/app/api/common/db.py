@@ -7,6 +7,8 @@ import psycopg2
 env_path = Path(__file__).resolve().parent.parent / ".env"
 if env_path.exists():
     load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
 
 
 DB_USER = os.getenv("DB_USER")

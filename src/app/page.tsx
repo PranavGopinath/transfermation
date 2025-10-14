@@ -5,7 +5,6 @@ import { Player, Team } from '@/types';
 import PlayerSearch from '@/components/PlayerSearch';
 import TeamSearch from '@/components/TeamSearch';
 import PredictionSection from '@/components/PredictionSection';
-import ConnectionStatus from '@/components/ConnectionStatus';
 import Image from 'next/image';
 import base from '../../public/base.svg';
 import base2 from '../../public/base2.svg';
@@ -19,7 +18,6 @@ export default function Home() {
   const [teamLoading, setTeamLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [showTeamResults, setShowTeamResults] = useState(false);
-  const [usingFallback, setUsingFallback] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [prediction, setPrediction] = useState<{
@@ -146,7 +144,6 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
 
         <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
-          <ConnectionStatus usingFallback={usingFallback} />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <PlayerSearch
@@ -159,7 +156,6 @@ export default function Home() {
               showResults={showResults}
               setShowResults={setShowResults}
               setSelectedPlayer={setSelectedPlayer}
-              setUsingFallback={setUsingFallback}
             />
 
             <TeamSearch
@@ -172,7 +168,6 @@ export default function Home() {
               showTeamResults={showTeamResults}
               setShowTeamResults={setShowTeamResults}
               setSelectedTeam={setSelectedTeam}
-              setUsingFallback={setUsingFallback}
             />
           </div>
         </div>
