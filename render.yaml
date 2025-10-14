@@ -3,7 +3,8 @@ services:
     name: transfermation-api
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    pythonVersion: "3.10"
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
     startCommand: python -m uvicorn src.app.api.common.app:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DB_HOST
