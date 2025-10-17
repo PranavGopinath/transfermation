@@ -17,6 +17,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Transfermation - Football Transfer Predictor",
   description: "Discover the predicted impact of your team's dream signings",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({

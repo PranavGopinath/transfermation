@@ -6,7 +6,7 @@ import PlayerSearch from '@/components/PlayerSearch';
 import TeamSearch from '@/components/TeamSearch';
 import PredictionSection from '@/components/PredictionSection';
 import Image from 'next/image';
-import base from '../../public/base.svg';
+import base from '../../public/base.jpg';
 import base2 from '../../public/base2.svg';
 
 export default function Home() {
@@ -119,33 +119,32 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-6">
+    <div className="min-h-screen bg-background text-foreground pb-6 overflow-x-hidden">
 
-<section className="relative h-[100svh] w-screen"> {/* use h-screen if you prefer */}
+<section className="relative h-[100vh] w-full max-w-full">
     <Image
       src={base}
       alt="Base"
       fill
-      className="object-cover"
+      className="object-cover" 
       priority
       sizes="100vw"
     />
-    <div className="absolute inset-0 bg-black/50" />
-    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-      <h1 className="text-5xl md:text-7xl font-serif text-[#EDE6B9] mb-3">
+    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#EDE6B9] mb-3 leading-tight">
         Transfermation
       </h1>
-      <p className="text-[#EDE6B9]/90">
+      <p className="text-[#EDE6B9]/90 text-sm sm:text-base md:text-lg max-w-2xl">
         Discover the predicted impact of your team&apos;s dream signing.
       </p>
     </div>
   </section>
-  <Image src={base2} alt="Base2" className="w-full h-auto" />
-      <div className="max-w-6xl mx-auto">
+  <Image src={base2} alt="Base2" className="w-full h-auto max-w-full" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
 
-        <div className="bg-card text-card-foreground rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 sm:p-6 mb-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             <PlayerSearch
               playerSearch={playerSearch}
               setPlayerSearch={setPlayerSearch}

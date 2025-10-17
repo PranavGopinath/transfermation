@@ -95,20 +95,20 @@ export default function TeamSearch({
           setShowTeamResults(true);
         }}
         onFocus={() => setShowTeamResults(true)}
-        className={`w-full px-4 py-2 border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+        className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
           teamSearch ? 'text-foreground' : 'text-muted-foreground'
         }`}
       />
 
       {showTeamResults && (teamLoading || teamSearchResults.length > 0) && (
-        <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-48 sm:max-h-60 overflow-y-auto">
           {teamLoading ? (
-            <div className="px-4 py-2 text-muted-foreground text-center">Searching...</div>
+            <div className="px-3 sm:px-4 py-2 text-muted-foreground text-center text-sm">Searching...</div>
           ) : teamSearchResults.length > 0 ? (
             teamSearchResults.map((team) => (
               <div
                 key={team.id}
-                className="px-4 py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
+                className="px-3 sm:px-4 py-2 sm:py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setTeamSearch(team.name);
@@ -117,10 +117,10 @@ export default function TeamSearch({
                   setTeamSearchResults([]);
                 }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-medium text-foreground">{team.name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-foreground text-sm sm:text-base truncate">{team.name}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {team.league} • {team.country}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -128,20 +128,20 @@ export default function TeamSearch({
                       {team.position_2425 && ` • ${team.position_2425}${getOrdinalSuffix(team.position_2425)}`}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end">
+                  <div className="flex flex-col items-end flex-shrink-0">
                     <Image 
                       src={getCountryFlag(team.country)} 
                       alt={team.country} 
-                      width={24}
-                      height={24}
-                      className="w-6 h-6"
+                      width={20}
+                      height={20}
+                      className="w-5 h-5 sm:w-6 sm:h-6"
                     />
                   </div>
                 </div>
               </div>
             ))
           ) : teamSearch.trim().length >= 2 ? (
-            <div className="px-4 py-2 text-gray-500 text-center">No teams found</div>
+            <div className="px-3 sm:px-4 py-2 text-muted-foreground text-center text-sm">No teams found</div>
           ) : null}
         </div>
       )}

@@ -74,20 +74,20 @@ export default function PlayerSearch({
           setShowResults(true);
         }}
         onFocus={() => setShowResults(true)}
-        className={`w-full px-4 py-2 border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
+        className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-border bg-card rounded-md focus:ring-2 focus:ring-primary focus:border-transparent ${
           playerSearch ? 'text-foreground' : 'text-muted-foreground'
         }`}
       />
 
       {showResults && (loading || searchResults.length > 0) && (
-        <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="search-dropdown absolute z-50 w-full mt-1 bg-card text-card-foreground border border-border rounded-md shadow-lg max-h-48 sm:max-h-60 overflow-y-auto">
           {loading ? (
-            <div className="px-4 py-2 text-muted-foreground text-center">Searching...</div>
+            <div className="px-3 sm:px-4 py-2 text-muted-foreground text-center text-sm">Searching...</div>
           ) : searchResults.length > 0 ? (
             searchResults.map((player) => (
               <div
                 key={player.id}
-                className="px-4 py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
+                className="px-3 sm:px-4 py-2 sm:py-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setPlayerSearch(player.name);
@@ -95,22 +95,22 @@ export default function PlayerSearch({
                   setShowResults(false);
                 }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-medium text-foreground">{player.name}</h4>
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-foreground text-sm sm:text-base truncate">{player.name}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {player.teams} • {player.primary_pos}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {player.total_goals}G {player.total_assists}A • {player.total_matches} matches • {player.seasons_count} seasons
                     </p>
                   </div>
-                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">{player.nation}</span>
+                  <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded flex-shrink-0">{player.nation}</span>
                 </div>
               </div>
             ))
           ) : playerSearch.trim().length >= 2 ? (
-            <div className="px-4 py-2 text-muted-foreground text-center">No players found</div>
+            <div className="px-3 sm:px-4 py-2 text-muted-foreground text-center text-sm">No players found</div>
           ) : null}
         </div>
       )}
