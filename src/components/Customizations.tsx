@@ -25,7 +25,6 @@ export default function Customizations({
 }: CustomizationsProps) {
   const [isCustomizeExpanded, setIsCustomizeExpanded] = useState(false);
 
-  // Check if steps 1 and 2 are completed
   const isStepsCompleted = selectedPlayer && selectedTeam;
 
   if (!isStepsCompleted) {
@@ -50,16 +49,18 @@ export default function Customizations({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4">
           <MinutesInput
             label="Incoming mins."
-            description="Enter projected minutes for incoming player."
+            description="Enter projected minutes for incoming player"
             value={playerMinutes}
             onChange={setPlayerMinutes}
             stepNumber="3"
+            optional={true}
           />
           <OutgoingMinutesSelector
             selectedTeam={selectedTeam}
             outgoingMinutes={outgoingMinutes}
             setOutgoingMinutes={setOutgoingMinutes}
             stepNumber="4"
+            optional={true}
           />
         </div>
       )}

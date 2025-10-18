@@ -30,7 +30,7 @@ export default function Home() {
     season_features_from: string;
   } | null>(null);
   const [predicting, setPredicting] = useState(false);
-  const [playerMinutes, setPlayerMinutes] = useState<string>("2000");
+  const [playerMinutes, setPlayerMinutes] = useState<string>("");
   const [outgoingMinutes, setOutgoingMinutes] = useState<string>("");
 
   const baseUrl =
@@ -74,7 +74,6 @@ export default function Home() {
           outgoingParsed = Object.keys(temp).length ? temp : undefined;
         }
       } catch {
-        // Fallback to old format parsing
         if (outgoingMinutes.includes(':')) {
           const parts = outgoingMinutes
             .split(",")

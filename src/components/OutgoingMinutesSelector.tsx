@@ -13,6 +13,7 @@ interface OutgoingMinutesSelectorProps {
   outgoingMinutes: string
   setOutgoingMinutes: (minutes: string) => void
   stepNumber: string
+  optional?: boolean
 }
 
 interface PlayerMinutes {
@@ -25,12 +26,12 @@ export function OutgoingMinutesSelector({
   outgoingMinutes,
   setOutgoingMinutes,
   stepNumber,
+  optional = false,
 }: OutgoingMinutesSelectorProps) {
   const [playerMinutesList, setPlayerMinutesList] = useState<PlayerMinutes[]>([])
   const [newPlayerName, setNewPlayerName] = useState("")
   const [newMinutes, setNewMinutes] = useState("")
 
-  // Parse outgoing minutes string to player list
   useEffect(() => {
     if (outgoingMinutes) {
       try {
@@ -84,7 +85,7 @@ export function OutgoingMinutesSelector({
         </div>
         <div>
           <h2 className="text-3xl mb-1 text-balance">
-            Outgoing mins <span className="italic">(optional)</span>
+            {stepNumber}. Outgoing mins. {optional && <span className="italic">{"(optional)"}</span>}
           </h2>
           <p className="text-muted-foreground font-sans text-sm">
             Select players from {selectedTeam?.name} to replace with incoming minutes.

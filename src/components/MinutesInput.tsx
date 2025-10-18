@@ -28,7 +28,7 @@ export function MinutesInput({ label, description, value, onChange, stepNumber, 
 
       <Input
         type="number"
-        placeholder="Enter minutes..."
+        placeholder={"Enter minutes..."}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="bg-white border-border text-black placeholder:text-gray-500"
