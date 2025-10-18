@@ -37,14 +37,8 @@ export default function Home() {
     process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
   const predictImpact = useCallback(async () => {
-    console.log('predictImpact called');
-    console.log('selectedPlayer:', selectedPlayer);
-    console.log('selectedTeam:', selectedTeam);
-    console.log('playerMinutes:', playerMinutes);
-    console.log('outgoingMinutes:', outgoingMinutes);
     
     if (!selectedPlayer || !selectedTeam) {
-      console.log('Missing player or team selection');
       return;
     }
 
@@ -56,24 +50,19 @@ export default function Home() {
     })();
 
     const playerMinutesNum = parseInt(playerMinutes, 10);
-    console.log('playerMinutesNum:', playerMinutesNum);
     
     if (
       !Number.isFinite(playerMinutesNum) ||
       playerMinutesNum < 0 ||
       playerMinutesNum > 4000
     ) {
-      console.log('Invalid player minutes:', playerMinutesNum);
       return;
     }
-    console.log('Player minutes validation passed');
 
     let outgoingParsed: Record<string, number> | undefined = undefined;
-    console.log('outgoingMinutes:', outgoingMinutes);
     
     if (outgoingMinutes.trim()) {
       try {
-        // Try to parse as JSON first (new format)
         const parsed = JSON.parse(outgoingMinutes);
         if (Array.isArray(parsed)) {
           const temp: Record<string, number> = {};
@@ -83,7 +72,6 @@ export default function Home() {
             }
           }
           outgoingParsed = Object.keys(temp).length ? temp : undefined;
-          console.log('outgoingParsed from JSON:', outgoingParsed);
         }
       } catch {
         // Fallback to old format parsing
@@ -104,15 +92,12 @@ export default function Home() {
               minsVal < 0 ||
               minsVal > 4000
             ) {
-              console.log('Invalid outgoing minutes format:', part);
               return;
             }
             temp[name] = minsVal;
           }
           outgoingParsed = Object.keys(temp).length ? temp : undefined;
         } else {
-          // If it's just a number, treat it as optional and skip validation
-          console.log('Outgoing minutes is just a number, treating as optional');
           outgoingParsed = undefined;
         }
       }
@@ -122,21 +107,11 @@ export default function Home() {
       ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0)
       : 0;
     if (totalOutgoing !== playerMinutesNum) {
-      console.log(`Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${playerMinutesNum}).`);
       return;
     }
 
     setPredicting(true);
     setPrediction(null);
-    console.log('Making API call to:', `${baseUrl}/prediction/whatif`);
-    console.log('Request body:', {
-      team_name: selectedTeam.name,
-      incoming_player_name: selectedPlayer.name,
-      target_season: nextSeason,
-      projected_minutes_in: playerMinutesNum,
-      outgoing_minutes: outgoingParsed,
-      cross_league_scale: 1.0,
-    });
     
     try {
       const response = await fetch(`${baseUrl}/prediction/whatif`, {
@@ -157,10 +132,8 @@ export default function Home() {
         setPrediction(result);
       } else {
         const text = await response.text();
-        console.error("Prediction failed:", response.status, text);
       }
     } catch (error) {
-      console.error("Error predicting impact:", error);
     } finally {
       setPredicting(false);
     }
