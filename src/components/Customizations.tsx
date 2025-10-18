@@ -27,15 +27,16 @@ export default function Customizations({
 
   const isStepsCompleted = selectedPlayer && selectedTeam;
 
-  if (!isStepsCompleted) {
-    return null;
-  }
-
   return (
     <div className="mb-6">
       <button
-        onClick={() => setIsCustomizeExpanded(!isCustomizeExpanded)}
-        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        onClick={() => isStepsCompleted && setIsCustomizeExpanded(!isCustomizeExpanded)}
+        disabled={!isStepsCompleted}
+        className={`flex items-center gap-2 text-sm transition-colors mb-4 ${
+          isStepsCompleted
+            ? "text-muted-foreground hover:text-foreground cursor-pointer"
+            : "text-muted-foreground/50 cursor-not-allowed"
+        }`}
       >
         {isCustomizeExpanded ? (
           <Minus className="w-4 h-4" />
@@ -45,7 +46,7 @@ export default function Customizations({
         <span>Customize</span>
       </button>
       
-      {isCustomizeExpanded && (
+      {isCustomizeExpanded && isStepsCompleted && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4">
           <MinutesInput
             label="Incoming mins."

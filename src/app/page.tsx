@@ -10,6 +10,7 @@ import Image from "next/image";
 import base from "../../public/base.png";
 import base2 from "../../public/base2.png";
 import { ScrollIndicator } from "./components/scroll-indicator";
+import { X } from "lucide-react";
 
 export default function Home() {
   const [playerSearch, setPlayerSearch] = useState("");
@@ -38,8 +39,9 @@ export default function Home() {
     process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
   const predictImpact = useCallback(async () => {
-    
+    console.log("hello")
     if (!selectedPlayer || !selectedTeam) {
+
       return;
     }
 
@@ -50,7 +52,7 @@ export default function Home() {
 
       return `${y2}-${y2 + 1}`;
     })();
-    const playerMinutesNum = parseInt(playerMinutes, 10);
+    const playerMinutesNum = playerMinutes.trim() === "" ? 0 : parseInt(playerMinutes, 10);
     
     if (
       !Number.isFinite(playerMinutesNum) ||
@@ -102,11 +104,11 @@ export default function Home() {
         }
       }
     }
-
     const totalOutgoing = outgoingParsed
       ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0)
       : 0;
-    if (totalOutgoing !== playerMinutesNum) {
+    
+    if (playerMinutes.trim() !== "" && totalOutgoing !== playerMinutesNum) {
       setPredictionError("Total outgoing minutes do not match player minutes. Please check your selections.");
       setPredicting(false);
       return;
@@ -142,7 +144,7 @@ export default function Home() {
         } else if (response.status === 400) {
           errorMessage = "Invalid input data. Please check your minutes and selections.";
         } else if (response.status >= 500) {
-          errorMessage = "Server error. Please try again later.";
+          errorMessage = "Invalid input data. Please check your minutes and selections.";
         }
         
         setPredictionError(errorMessage);
@@ -171,6 +173,13 @@ export default function Home() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!selectedTeam) {
+      setOutgoingMinutes("");
+      setTeamSearch("");
+    }
+  }, [selectedTeam]);
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-6 overflow-x-hidden">
