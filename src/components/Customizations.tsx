@@ -56,7 +56,6 @@ export default function Customizations({
             stepNumber="3"
           />
           <OutgoingMinutesSelector
-            selectedPlayer={selectedPlayer}
             selectedTeam={selectedTeam}
             outgoingMinutes={outgoingMinutes}
             setOutgoingMinutes={setOutgoingMinutes}

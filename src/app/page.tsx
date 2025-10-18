@@ -30,11 +30,6 @@ export default function Home() {
     season_features_from: string;
   } | null>(null);
   const [predicting, setPredicting] = useState(false);
-  const [projectedMinutes, setProjectedMinutes] = useState<number>(2000);
-  const [outgoingMinutesText, setOutgoingMinutesText] = useState<string>("");
-  const [projectedMinutesError, setProjectedMinutesError] =
-    useState<string>("");
-  const [outgoingMinutesError, setOutgoingMinutesError] = useState<string>("");
   const [playerMinutes, setPlayerMinutes] = useState<string>("2000");
   const [outgoingMinutes, setOutgoingMinutes] = useState<string>("");
 
@@ -69,10 +64,8 @@ export default function Home() {
       playerMinutesNum > 4000
     ) {
       console.log('Invalid player minutes:', playerMinutesNum);
-      setProjectedMinutesError("Projected minutes must be between 0 and 4000.");
       return;
     }
-    setProjectedMinutesError("");
     console.log('Player minutes validation passed');
 
     let outgoingParsed: Record<string, number> | undefined = undefined;
@@ -112,9 +105,6 @@ export default function Home() {
               minsVal > 4000
             ) {
               console.log('Invalid outgoing minutes format:', part);
-              setOutgoingMinutesError(
-                'Use "Name:Minutes" with minutes 0–4000, comma-separated.'
-              );
               return;
             }
             temp[name] = minsVal;
@@ -127,15 +117,12 @@ export default function Home() {
         }
       }
     }
-    setOutgoingMinutesError("");
 
     const totalOutgoing = outgoingParsed
       ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0)
       : 0;
     if (totalOutgoing !== playerMinutesNum) {
-      const msg = `Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${playerMinutesNum}).`;
-      setProjectedMinutesError(msg);
-      setOutgoingMinutesError(msg);
+      console.log(`Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${playerMinutesNum}).`);
       return;
     }
 
@@ -284,12 +271,6 @@ export default function Home() {
 
         {/* Prediction Section */}
         <PredictionSection
-          selectedPlayer={selectedPlayer}
-          selectedTeam={selectedTeam}
-          playerSearch={playerSearch}
-          searchResults={searchResults}
-          teamSearch={teamSearch}
-          teamSearchResults={teamSearchResults}
           predictImpact={predictImpact}
           predicting={predicting}
           prediction={prediction}

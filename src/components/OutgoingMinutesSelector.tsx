@@ -9,7 +9,6 @@ import { Button } from "./ui/button"
 import { X, Plus } from "lucide-react"
 
 interface OutgoingMinutesSelectorProps {
-  selectedPlayer: Player | null
   selectedTeam: Team | null
   outgoingMinutes: string
   setOutgoingMinutes: (minutes: string) => void
@@ -22,7 +21,6 @@ interface PlayerMinutes {
 }
 
 export function OutgoingMinutesSelector({
-  selectedPlayer,
   selectedTeam,
   outgoingMinutes,
   setOutgoingMinutes,

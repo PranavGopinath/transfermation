@@ -2,17 +2,9 @@
 
 import React from 'react';
 import { Player, Team } from '@/types';
-import PlayerCard from './PlayerCard';
-import TeamCard from './TeamCard';
 import { Button } from './ui/button';
 
 interface PredictionSectionProps {
-  selectedPlayer: Player | null;
-  selectedTeam: Team | null;
-  playerSearch: string;
-  searchResults: Player[];
-  teamSearch: string;
-  teamSearchResults: Team[];
   predictImpact: () => void;
   predicting: boolean;
   prediction: {
@@ -25,12 +17,6 @@ interface PredictionSectionProps {
 }
 
 export default function PredictionSection({
-  selectedPlayer,
-  selectedTeam,
-  playerSearch,
-  searchResults,
-  teamSearch,
-  teamSearchResults,
   predictImpact,
   predicting,
   prediction,
