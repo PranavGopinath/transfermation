@@ -8,7 +8,7 @@
   --card-foreground: #80CCDC;
   --popover: #1e1e24;
   --popover-foreground: #80CCDC;
-  --primary: #80CCDC;               
+  --primary: #EDE6B9;               
   --primary-foreground: #ffffff;
   --secondary: #80CCDC;            
   --secondary-foreground: #1e1e24;  
@@ -50,7 +50,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-mono);
+  --font-sans: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
   --radius: var(--radius);
 }
@@ -62,7 +62,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-mono), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
