@@ -132,8 +132,10 @@ export default function Home() {
         setPrediction(result);
       } else {
         const text = await response.text();
+        console.error("Prediction failed:", response.status, text);
       }
     } catch (error) {
+      console.error("Error predicting impact:", error);
     } finally {
       setPredicting(false);
     }
