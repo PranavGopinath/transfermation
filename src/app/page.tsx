@@ -34,6 +34,8 @@ export default function Home() {
   const [projectedMinutesError, setProjectedMinutesError] =
     useState<string>("");
   const [outgoingMinutesError, setOutgoingMinutesError] = useState<string>("");
+  const [playerMinutes, setPlayerMinutes] = useState<string>("2000");
+  const [outgoingMinutes, setOutgoingMinutes] = useState<string>("");
 
   const baseUrl =
     process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -219,25 +221,27 @@ export default function Home() {
         </div>
 
         {/* Prediction Section */}
-        {(selectedPlayer || selectedTeam) && (
-          <PredictionSection
-            selectedPlayer={selectedPlayer}
-            selectedTeam={selectedTeam}
-            playerSearch={playerSearch}
-            searchResults={searchResults}
-            teamSearch={teamSearch}
-            teamSearchResults={teamSearchResults}
-            predictImpact={predictImpact}
-            predicting={predicting}
-            prediction={prediction}
-            projectedMinutes={projectedMinutes}
-            setProjectedMinutes={setProjectedMinutes}
-            outgoingMinutesText={outgoingMinutesText}
-            setOutgoingMinutesText={setOutgoingMinutesText}
-            projectedMinutesError={projectedMinutesError}
-            outgoingMinutesError={outgoingMinutesError}
-          />
-        )}
+        <PredictionSection
+          selectedPlayer={selectedPlayer}
+          selectedTeam={selectedTeam}
+          playerSearch={playerSearch}
+          searchResults={searchResults}
+          teamSearch={teamSearch}
+          teamSearchResults={teamSearchResults}
+          predictImpact={predictImpact}
+          predicting={predicting}
+          prediction={prediction}
+          projectedMinutes={projectedMinutes}
+          setProjectedMinutes={setProjectedMinutes}
+          outgoingMinutesText={outgoingMinutesText}
+          setOutgoingMinutesText={setOutgoingMinutesText}
+          projectedMinutesError={projectedMinutesError}
+          outgoingMinutesError={outgoingMinutesError}
+          playerMinutes={playerMinutes}
+          setPlayerMinutes={setPlayerMinutes}
+          outgoingMinutes={outgoingMinutes}
+          setOutgoingMinutes={setOutgoingMinutes}
+        />
       </div>
     </div>
   );

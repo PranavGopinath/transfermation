@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Player } from '@/types';
+import { X } from 'lucide-react';
 
 interface PlayerSelectorProps {
   playerSearch: string;
@@ -137,6 +138,7 @@ export function PlayerSelector({
               </div>
               <p className="text-sm text-muted-foreground">{selectedPlayer.first_season} - {selectedPlayer.last_season}</p>
             </div>
+            <X className="w-4 h-4 text-red-400 cursor-pointer" onClick={() => setSelectedPlayer(null)} />
           </div>
 
           <div className="grid grid-cols-4 gap-4">

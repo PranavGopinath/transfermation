@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Team } from '@/types';
 import Image from 'next/image';
+import { X } from 'lucide-react';
 
 interface TeamSelectorProps {
   teamSearch: string;
@@ -168,6 +169,7 @@ export function TeamSelector({
               </div>
               <p className="text-sm text-muted-foreground">{selectedTeam.country} • {selectedTeam.league}</p>
             </div>
+            <X className="w-4 h-4 text-red-400 cursor-pointer" onClick={() => setSelectedTeam(null)} />
           </div>
 
           <div className="grid grid-cols-4 gap-4">
