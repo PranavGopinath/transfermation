@@ -40,7 +40,6 @@ export function OutgoingMinutesSelector({
           setPlayerMinutesList(parsed)
         }
       } catch {
-        // If not JSON, try to parse as "Name:Minutes,Name2:Minutes" format
         const parts = outgoingMinutes.split(",").map(p => p.trim()).filter(Boolean)
         const parsed = parts.map(part => {
           const [name, minsStr] = part.split(":").map(s => s.trim())
