@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from './ui/button';
+import LoadingSpinner from './LoadingSpinner';
 
 interface PredictionSectionProps {
   predictImpact: () => void;
@@ -32,7 +33,14 @@ export default function PredictionSection({
           disabled={predicting}
           className="bg-primary hover:bg-primary/90 text-black cursor-pointer px-8 py-6 text-lg font-serif italic"
         >
-          {predicting ? 'Predicting...' : 'Impact'}
+          {predicting ? (
+            <div className="flex items-center gap-2">
+              <LoadingSpinner size="sm" />
+              <span>Predicting...</span>
+            </div>
+          ) : (
+            'Impact'
+          )}
         </Button>
       </div>
 

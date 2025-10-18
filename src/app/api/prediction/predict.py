@@ -128,12 +128,9 @@ def predict_impact(request: PredictionRequest):
         
         model = load_model()
         
-        if model is not None:
-            prediction = model.predict(features)[0]
-            confidence = 0.85 
-        else:
-            prediction = predict_fallback(player_data, team_data)
-            confidence = 0.60
+        prediction = model.predict(features)[0]
+        confidence = 0.85 
+
         
         impact_score = float(prediction)
         impact_level = get_impact_level(impact_score)
@@ -162,11 +159,9 @@ def predict_impact(request: PredictionRequest):
 def predict_points_delta(request: WhatIfRequest):
     """Predict baseline points, with-transfer points, and delta using simulator."""
     try:
-        # Import simulator lazily to avoid heavy import at startup
         import sys
         from pathlib import Path as _Path
         try:
-            # Ensure project root is on sys.path for 'src.' imports
             root = _Path(__file__).resolve().parents[5]
             if str(root) not in sys.path:
                 sys.path.append(str(root))
@@ -177,6 +172,7 @@ def predict_points_delta(request: WhatIfRequest):
             from src.lib.ml.inference.simulator import predict_with_and_without_transfer
         except Exception as ie:
             raise HTTPException(status_code=500, detail=f"Simulator import failed: {ie}")
+
 
         res = predict_with_and_without_transfer(
             team=request.team_name,
@@ -196,25 +192,6 @@ def predict_points_delta(request: WhatIfRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"What-if prediction failed: {str(e)}")
 
-def predict_fallback(player_data, team_data):
-    """Fallback prediction using simple heuristics"""
-    total_matches = player_data['total_matches'] or 0
-    total_goals = player_data['total_goals'] or 0
-    total_assists = player_data['total_assists'] or 0
-    total_clean_sheets = player_data['total_clean_sheets'] or 0
-    
-    player_quality = (
-        (total_goals / max(total_matches, 1)) * 0.4 +
-        (total_assists / max(total_matches, 1)) * 0.3 +
-        (total_clean_sheets / max(total_matches, 1)) * 0.2 +
-        (player_data['avg_save_pct'] or 0) * 0.1
-    )
-    
-    team_quality = 1.0 / max(team_data['position_2425'] or 20, 1) 
-    
-    impact = (player_quality * 0.7 + team_quality * 0.3) * 10 
-    
-    return min(max(impact, 1.0), 10.0)  
 
 def get_impact_level(score):
     """Convert impact score to descriptive level"""
