@@ -9,13 +9,9 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://transfermation.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:3001",
-    ],
+    allow_origins=["*"],  # Allow all origins for now
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -26,3 +22,16 @@ app.include_router(prediction_router)
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
+
+@app.get("/test-db")
+def test_db():
+    try:
+        from .db import get_conn
+        conn = get_conn()
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM players")
+            count = cur.fetchone()[0]
+        conn.close()
+        return {"status": "ok", "player_count": count}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
