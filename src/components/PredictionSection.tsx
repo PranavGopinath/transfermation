@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Player, Team } from '@/types';
 import { Button } from './ui/button';
 
 interface PredictionSectionProps {

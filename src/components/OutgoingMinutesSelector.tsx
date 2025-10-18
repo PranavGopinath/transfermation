@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Player, Team } from "@/types"
+import { Team } from "@/types"
 import { Card } from "./ui/card"
 import { Input } from "./ui/input"
 import { Badge } from "./ui/badge"
