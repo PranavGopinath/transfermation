@@ -59,7 +59,7 @@ export default function PredictionSection({
       )}
 
       {prediction && (
-        <div className="mt-4 p-3 sm:p-4 rounded-lg" style={{ background: 'var(--gradient-primary)' }}>
+        <div className="mt-4 p-3 sm:p-4 rounded-lg" style={{ background: 'var(--gradient-prediction)' }}>
           <h3 className="text-base sm:text-lg font-semibold text-foreground mb-3">Predicted Team Points Impact</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div className="text-center">
@@ -75,7 +75,7 @@ export default function PredictionSection({
               <div className="text-xs sm:text-sm text-foreground">Delta (± points)</div>
             </div>
           </div>
-          <div className="mt-2 text-xs sm:text-sm text-foreground">Season: {prediction.season_target} (features from {prediction.season_features_from})</div>
+          <div className="mt-2 text-xs sm:text-sm text-foreground">Season: {prediction.season_target}</div>
         </div>
       )}
     </div>

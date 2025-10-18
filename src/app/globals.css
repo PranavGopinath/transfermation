@@ -24,10 +24,11 @@
   --radius: 0.75rem;
   
   /* Custom gradients */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-primary: linear-gradient(135deg, #2E2D4D 0%, #021C29 100%);
   --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  --gradient-prediction: linear-gradient(135deg, #021C29 0%, #2E2D4D 50%, #1e1e24 100%);
 }
 
 @theme inline {
