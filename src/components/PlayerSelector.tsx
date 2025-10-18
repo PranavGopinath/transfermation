@@ -49,7 +49,7 @@ export function PlayerSelector({
         const data = await response.json();
         setSearchResults(data);
       }
-    } catch (err) {
+    } catch {
       setSearchResults([]);
     } finally {
       setLoading(false);

@@ -10,7 +10,6 @@ import Image from "next/image";
 import base from "../../public/base.png";
 import base2 from "../../public/base2.png";
 import { ScrollIndicator } from "./components/scroll-indicator";
-import { X } from "lucide-react";
 
 export default function Home() {
   const [playerSearch, setPlayerSearch] = useState("");
@@ -136,7 +135,7 @@ export default function Home() {
         setPrediction(result);
         setPredictionError(null);
       } else {
-        const errorText = await response.text();
+        await response.text();
         let errorMessage = "Failed to generate prediction. Please try again.";
         
         if (response.status === 404) {
@@ -149,7 +148,7 @@ export default function Home() {
         
         setPredictionError(errorMessage);
       }
-    } catch (error) {
+    } catch {
       setPredictionError("Network error. Please check your connection and try again.");
     } finally {
       setPredicting(false);

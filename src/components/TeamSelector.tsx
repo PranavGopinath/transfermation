@@ -70,7 +70,7 @@ export function TeamSelector({
         const data = await response.json();
         setTeamSearchResults(data);
       }
-    } catch (err) {
+    } catch {
       setTeamSearchResults([]);
     } finally {
       setTeamLoading(false);
