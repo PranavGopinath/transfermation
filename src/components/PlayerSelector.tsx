@@ -44,15 +44,12 @@ export function PlayerSelector({
       const url = `${baseUrl}/players/search/aggregate?q=${encodeURIComponent(query)}`;
       const response = await fetch(url, { cache: 'no-store' });
       if (!response.ok) {
-        const text = await response.text();
-        console.error('Player search failed:', response.status, text);
         setSearchResults([]);
       } else {
         const data = await response.json();
         setSearchResults(data);
       }
     } catch (err) {
-      console.error('Error searching players:', err);
       setSearchResults([]);
     } finally {
       setLoading(false);

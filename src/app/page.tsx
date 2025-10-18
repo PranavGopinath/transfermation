@@ -30,6 +30,7 @@ export default function Home() {
     season_features_from: string;
   } | null>(null);
   const [predicting, setPredicting] = useState(false);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
   const [playerMinutes, setPlayerMinutes] = useState<string>("");
   const [outgoingMinutes, setOutgoingMinutes] = useState<string>("");
 
@@ -46,9 +47,9 @@ export default function Home() {
       const latest = selectedTeam.latest_season || "2024-2025";
       const [y1, y2] = latest.split("-").map((s) => parseInt(s, 10));
       if (isNaN(y1) || isNaN(y2)) return "2025-2026";
+
       return `${y2}-${y2 + 1}`;
     })();
-
     const playerMinutesNum = parseInt(playerMinutes, 10);
     
     if (
@@ -106,12 +107,14 @@ export default function Home() {
       ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0)
       : 0;
     if (totalOutgoing !== playerMinutesNum) {
+      setPredictionError("Total outgoing minutes do not match player minutes. Please check your selections.");
+      setPredicting(false);
       return;
     }
 
     setPredicting(true);
     setPrediction(null);
-    
+    setPredictionError(null);
     try {
       const response = await fetch(`${baseUrl}/prediction/whatif`, {
         method: "POST",
@@ -129,12 +132,23 @@ export default function Home() {
       if (response.ok) {
         const result = await response.json();
         setPrediction(result);
+        setPredictionError(null);
       } else {
-        const text = await response.text();
-        console.error("Prediction failed:", response.status, text);
+        const errorText = await response.text();
+        let errorMessage = "Failed to generate prediction. Please try again.";
+        
+        if (response.status === 404) {
+          errorMessage = "Player or team not found. Please check your selections.";
+        } else if (response.status === 400) {
+          errorMessage = "Invalid input data. Please check your minutes and selections.";
+        } else if (response.status >= 500) {
+          errorMessage = "Server error. Please try again later.";
+        }
+        
+        setPredictionError(errorMessage);
       }
     } catch (error) {
-      console.error("Error predicting impact:", error);
+      setPredictionError("Network error. Please check your connection and try again.");
     } finally {
       setPredicting(false);
     }
@@ -170,16 +184,15 @@ export default function Home() {
           sizes="100vw"
           className="object-cover"
         />
-        {/* Bottom gradient overlay (the PNG itself) */}
+        {/* Bottom gradient overlay */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28vh] sm:h-[24vh] md:h-[20vh]">
           <Image
-            src={base2} // <-- your gradient PNG with alpha
+            src={base2} 
             alt=""
             aria-hidden
             fill
             sizes="100vw"
             className="object-cover object-bottom"
-            // no opacity on parent! keep it isolated so only this strip is affected
           />
         </div>
         {/* Content */}
@@ -248,6 +261,7 @@ export default function Home() {
           predictImpact={predictImpact}
           predicting={predicting}
           prediction={prediction}
+          predictionError={predictionError}
         />
       </div>
     </div>

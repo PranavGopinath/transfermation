@@ -65,15 +65,12 @@ export function TeamSelector({
       const url = `${baseUrl}/team/search?q=${encodeURIComponent(query)}`;
       const response = await fetch(url, { cache: 'no-store' });
       if (!response.ok) {
-        const text = await response.text();
-        console.error('Team search failed:', response.status, text);
         setTeamSearchResults([]);
       } else {
         const data = await response.json();
         setTeamSearchResults(data);
       }
     } catch (err) {
-      console.error('Error searching teams:', err);
       setTeamSearchResults([]);
     } finally {
       setTeamLoading(false);

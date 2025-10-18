@@ -14,12 +14,14 @@ interface PredictionSectionProps {
     season_target: string;
     season_features_from: string;
   } | null;
+  predictionError: string | null;
 }
 
 export default function PredictionSection({
   predictImpact,
   predicting,
   prediction,
+  predictionError,
 }: PredictionSectionProps) {
   return (
     <div className="text-card-foreground rounded-lg shadow-md p-4 sm:p-6 mb-6 w-full">
@@ -43,6 +45,18 @@ export default function PredictionSection({
           )}
         </Button>
       </div>
+
+      {predictionError && (
+        <div className="mt-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-destructive"></div>
+              <h3 className="text-sm font-semibold text-destructive">Prediction Failed</h3>
+            </div>
+          </div>
+          <p className="text-sm text-destructive/80 mt-2">{predictionError}</p>
+        </div>
+      )}
 
       {prediction && (
         <div className="mt-4 p-3 sm:p-4 rounded-lg" style={{ background: 'var(--gradient-primary)' }}>
