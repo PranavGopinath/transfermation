@@ -6,8 +6,8 @@ import PlayerSearch from '@/components/PlayerSearch';
 import TeamSearch from '@/components/TeamSearch';
 import PredictionSection from '@/components/PredictionSection';
 import Image from 'next/image';
-import base from '../../public/base.jpg';
-import base2 from '../../public/base2.svg';
+import base from '../../public/base.png';
+import base2 from '../../public/base2.png';
 
 export default function Home() {
   const [playerSearch, setPlayerSearch] = useState('');
@@ -121,24 +121,35 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-6 overflow-x-hidden">
 
-<section className="relative h-[100vh] w-full max-w-full">
+<section className="relative h-[100vh] w-full overflow-hidden">
+  {/* Background photo */}
+  <Image
+    src={base}
+    alt="Base"
+    fill
+    priority
+    sizes="100vw"
+    className="object-cover"
+  />
+
+  {/* Bottom gradient overlay (the PNG itself) */}
+  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[28vh] sm:h-[24vh] md:h-[20vh]">
     <Image
-      src={base}
-      alt="Base"
+      src={base2}            // <-- your gradient PNG with alpha
+      alt=""
+      aria-hidden
       fill
-      className="object-cover" 
-      priority
       sizes="100vw"
+      className="object-cover object-bottom"
+      // no opacity on parent! keep it isolated so only this strip is affected
     />
-    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-      <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#EDE6B9] mb-3 leading-tight">
-        Transfermation
-      </h1>
-      <p className="text-[#EDE6B9]/90 text-sm sm:text-base md:text-lg max-w-2xl">
-        Discover the predicted impact of your team&apos;s dream signing.
-      </p>
-    </div>
-  </section>
+  </div>
+
+  {/* Content */}
+  <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4"> <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#EDE6B9] mb-3 leading-tight"> Transfermation </h1> <p className="text-[#EDE6B9]/90 text-sm sm:text-base md:text-lg max-w-2xl"> Discover the predicted impact of your team&apos;s dream signing. </p> </div>
+</section>
+
+
   <Image src={base2} alt="Base2" className="w-full h-auto max-w-full" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
 
