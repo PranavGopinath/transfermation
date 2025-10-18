@@ -35,7 +35,7 @@ export function ScrollIndicator() {
       }`}
       aria-label="Check it out"
     >
-      <span className="text-sm font-medium text-primary">Check it out</span>
+      <span className="text-sm font-medium font-sans text-primary">Check it out</span>
       <div className="flex flex-col gap-1 animate-bounce">
         <ChevronDown className="h-6 w-6 text-primary" />
       </div>

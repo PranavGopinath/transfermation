@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Player, Team } from "@/types";
-import PlayerSearch from "@/components/PlayerSearch";
-import TeamSearch from "@/components/TeamSearch";
+import { PlayerSelector } from "@/components/PlayerSelector";
+import { TeamSelector } from "@/components/TeamSelector";
 import PredictionSection from "@/components/PredictionSection";
 import Image from "next/image";
 import base from "../../public/base.png";
@@ -177,7 +177,7 @@ export default function Home() {
               mation
             </span>
           </h1>
-          <p className="text-primary/90 text-xs sm:text-base md:text-lg max-w-2xl">
+          <p className="font-sans text-primary/90 text-xs sm:text-base md:text-lg max-w-2xl">
             Discover the predicted impact of your team&apos;s dream signing.
           </p>
         </div>
@@ -188,9 +188,9 @@ export default function Home() {
 
       <Image src={base2} alt="Base2" className="w-full h-auto max-w-full" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="bg-card text-card-foreground rounded-lg shadow-md p-4 sm:p-6 mb-6">
+        <div className="bg-transparent text-card-foreground rounded-lg shadow-md p-4 sm:p-6 mb-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <PlayerSearch
+            <PlayerSelector
               playerSearch={playerSearch}
               setPlayerSearch={setPlayerSearch}
               searchResults={searchResults}
@@ -200,9 +200,10 @@ export default function Home() {
               showResults={showResults}
               setShowResults={setShowResults}
               setSelectedPlayer={setSelectedPlayer}
+              selectedPlayer={selectedPlayer}
             />
 
-            <TeamSearch
+            <TeamSelector
               teamSearch={teamSearch}
               setTeamSearch={setTeamSearch}
               teamSearchResults={teamSearchResults}
@@ -212,6 +213,7 @@ export default function Home() {
               showTeamResults={showTeamResults}
               setShowTeamResults={setShowTeamResults}
               setSelectedTeam={setSelectedTeam}
+              selectedTeam={selectedTeam}
             />
           </div>
         </div>
