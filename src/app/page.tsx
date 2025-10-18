@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Player, Team } from "@/types";
 import { PlayerSelector } from "@/components/PlayerSelector";
 import { TeamSelector } from "@/components/TeamSelector";
+import Customizations from "@/components/Customizations";
 import PredictionSection from "@/components/PredictionSection";
 import Image from "next/image";
 import base from "../../public/base.png";
@@ -41,7 +42,16 @@ export default function Home() {
     process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
   const predictImpact = useCallback(async () => {
-    if (!selectedPlayer || !selectedTeam) return;
+    console.log('predictImpact called');
+    console.log('selectedPlayer:', selectedPlayer);
+    console.log('selectedTeam:', selectedTeam);
+    console.log('playerMinutes:', playerMinutes);
+    console.log('outgoingMinutes:', outgoingMinutes);
+    
+    if (!selectedPlayer || !selectedTeam) {
+      console.log('Missing player or team selection');
+      return;
+    }
 
     const nextSeason = (() => {
       const latest = selectedTeam.latest_season || "2024-2025";
@@ -50,48 +60,80 @@ export default function Home() {
       return `${y2}-${y2 + 1}`;
     })();
 
+    const playerMinutesNum = parseInt(playerMinutes, 10);
+    console.log('playerMinutesNum:', playerMinutesNum);
+    
     if (
-      !Number.isFinite(projectedMinutes) ||
-      projectedMinutes < 0 ||
-      projectedMinutes > 4000
+      !Number.isFinite(playerMinutesNum) ||
+      playerMinutesNum < 0 ||
+      playerMinutesNum > 4000
     ) {
+      console.log('Invalid player minutes:', playerMinutesNum);
       setProjectedMinutesError("Projected minutes must be between 0 and 4000.");
       return;
     }
     setProjectedMinutesError("");
+    console.log('Player minutes validation passed');
 
     let outgoingParsed: Record<string, number> | undefined = undefined;
-    if (outgoingMinutesText.trim()) {
-      const parts = outgoingMinutesText
-        .split(",")
-        .map((p) => p.trim())
-        .filter(Boolean);
-      const temp: Record<string, number> = {};
-      for (const part of parts) {
-        const [name, minsStr] = part.split(":").map((s) => s.trim());
-        const minsVal = parseInt(minsStr ?? "", 10);
-        if (
-          !name ||
-          !Number.isFinite(minsVal) ||
-          minsVal < 0 ||
-          minsVal > 4000
-        ) {
-          setOutgoingMinutesError(
-            'Use "Name:Minutes" with minutes 0–4000, comma-separated.'
-          );
-          return;
+    console.log('outgoingMinutes:', outgoingMinutes);
+    
+    if (outgoingMinutes.trim()) {
+      try {
+        // Try to parse as JSON first (new format)
+        const parsed = JSON.parse(outgoingMinutes);
+        if (Array.isArray(parsed)) {
+          const temp: Record<string, number> = {};
+          for (const item of parsed) {
+            if (item.playerName && typeof item.minutes === 'number') {
+              temp[item.playerName] = item.minutes;
+            }
+          }
+          outgoingParsed = Object.keys(temp).length ? temp : undefined;
+          console.log('outgoingParsed from JSON:', outgoingParsed);
         }
-        temp[name] = minsVal;
+      } catch {
+        // Fallback to old format parsing
+        if (outgoingMinutes.includes(':')) {
+          const parts = outgoingMinutes
+            .split(",")
+            .map((p) => p.trim())
+            .filter(Boolean);
+          
+          const temp: Record<string, number> = {};
+          for (const part of parts) {
+            const [name, minsStr] = part.split(":").map((s) => s.trim());
+            const minsVal = parseInt(minsStr ?? "", 10);
+            
+            if (
+              !name ||
+              !Number.isFinite(minsVal) ||
+              minsVal < 0 ||
+              minsVal > 4000
+            ) {
+              console.log('Invalid outgoing minutes format:', part);
+              setOutgoingMinutesError(
+                'Use "Name:Minutes" with minutes 0–4000, comma-separated.'
+              );
+              return;
+            }
+            temp[name] = minsVal;
+          }
+          outgoingParsed = Object.keys(temp).length ? temp : undefined;
+        } else {
+          // If it's just a number, treat it as optional and skip validation
+          console.log('Outgoing minutes is just a number, treating as optional');
+          outgoingParsed = undefined;
+        }
       }
-      outgoingParsed = Object.keys(temp).length ? temp : undefined;
     }
     setOutgoingMinutesError("");
 
     const totalOutgoing = outgoingParsed
       ? Object.values(outgoingParsed).reduce((a, b) => a + b, 0)
       : 0;
-    if (totalOutgoing !== projectedMinutes) {
-      const msg = `Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${projectedMinutes}).`;
+    if (totalOutgoing !== playerMinutesNum) {
+      const msg = `Total outgoing minutes (${totalOutgoing}) must equal projected minutes (${playerMinutesNum}).`;
       setProjectedMinutesError(msg);
       setOutgoingMinutesError(msg);
       return;
@@ -99,6 +141,16 @@ export default function Home() {
 
     setPredicting(true);
     setPrediction(null);
+    console.log('Making API call to:', `${baseUrl}/prediction/whatif`);
+    console.log('Request body:', {
+      team_name: selectedTeam.name,
+      incoming_player_name: selectedPlayer.name,
+      target_season: nextSeason,
+      projected_minutes_in: playerMinutesNum,
+      outgoing_minutes: outgoingParsed,
+      cross_league_scale: 1.0,
+    });
+    
     try {
       const response = await fetch(`${baseUrl}/prediction/whatif`, {
         method: "POST",
@@ -107,7 +159,7 @@ export default function Home() {
           team_name: selectedTeam.name,
           incoming_player_name: selectedPlayer.name,
           target_season: nextSeason,
-          projected_minutes_in: projectedMinutes,
+          projected_minutes_in: playerMinutesNum,
           outgoing_minutes: outgoingParsed,
           cross_league_scale: 1.0,
         }),
@@ -129,8 +181,8 @@ export default function Home() {
     selectedPlayer,
     selectedTeam,
     baseUrl,
-    projectedMinutes,
-    outgoingMinutesText,
+    playerMinutes,
+    outgoingMinutes,
   ]);
 
   useEffect(() => {
@@ -220,6 +272,16 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Customizations Section */}
+        <Customizations
+          selectedPlayer={selectedPlayer}
+          selectedTeam={selectedTeam}
+          playerMinutes={playerMinutes}
+          setPlayerMinutes={setPlayerMinutes}
+          outgoingMinutes={outgoingMinutes}
+          setOutgoingMinutes={setOutgoingMinutes}
+        />
+
         {/* Prediction Section */}
         <PredictionSection
           selectedPlayer={selectedPlayer}
@@ -231,16 +293,6 @@ export default function Home() {
           predictImpact={predictImpact}
           predicting={predicting}
           prediction={prediction}
-          projectedMinutes={projectedMinutes}
-          setProjectedMinutes={setProjectedMinutes}
-          outgoingMinutesText={outgoingMinutesText}
-          setOutgoingMinutesText={setOutgoingMinutesText}
-          projectedMinutesError={projectedMinutesError}
-          outgoingMinutesError={outgoingMinutesError}
-          playerMinutes={playerMinutes}
-          setPlayerMinutes={setPlayerMinutes}
-          outgoingMinutes={outgoingMinutes}
-          setOutgoingMinutes={setOutgoingMinutes}
         />
       </div>
     </div>
