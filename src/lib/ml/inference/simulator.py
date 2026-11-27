@@ -144,22 +144,22 @@ def apply_transfer_to_players(
     inc["Squad"] = df["Squad"].iloc[0]
     if "Comp" in df.columns:
         inc["Comp"] = df["Comp"].iloc[0]
-    inc["Min"] = float(projected_minutes_in)
-
-    per90_to_total = [
-        ("gls_per90","Gls"), ("ast_per90","Ast"), ("sot_per90","SoT"),
-        ("sca_per90","SCA"), ("prgp_per90","PrgP"), ("prgc_per90","PrgC"),
-        ("prgr_per90","PrgR"), ("tklint_per90","Tkl+Int"),
-    ]
-    for p90, tot in per90_to_total:
-        if p90 in inc and inc[p90] is not None and not pd.isna(inc[p90]):
-            inc[tot] = cross_league_scale * float(inc[p90]) * inc["Min"] / 90.0
+    # The incoming row holds the player's season totals over the minutes he actually
+    # played. Rescale those totals to the projected minutes (i.e. keep his per-90
+    # rates) so a full season of output isn't credited to a partial-season projection.
+    actual_min = float(_num(pd.Series([inc.get("Min")])).fillna(0.0).iloc[0])
+    projected_min = float(projected_minutes_in)
+    minutes_ratio = projected_min / actual_min if actual_min > 0 else 0.0
 
     for col in COUNT_COLS:
         if col == "Min":
             continue
-        if col in inc and inc[col] is not None and not pd.isna(inc[col]):
-            inc[col] = cross_league_scale * float(inc[col])
+        val = _num(pd.Series([inc.get(col)])).iloc[0] if col in inc else np.nan
+        if pd.isna(val):
+            continue
+        inc[col] = cross_league_scale * float(val) * minutes_ratio
+
+    inc["Min"] = projected_min
 
     df = pd.concat([df, pd.DataFrame([inc])], ignore_index=True)
 
